@@ -12,3 +12,6 @@ Roblox internal offset dumper base made for android. Tested only on Arch Linux
 1. Download [rscooplinux](https://github.com/barpyfartz/AndroidRScoop/releases/download/release/rscooplinux) and android roblox apk
 2. Run it with ./rscooplinux /path/to/roblox.apk arm64-v8a
 3. done
+
+You can install apk from:
+[APKMirror](https://www.apkmirror.com/apk/roblox-corporation/roblox/nigger/) (BASE APK. NOT BUNDLE)
