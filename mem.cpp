@@ -1,18 +1,23 @@
 #include "mem.h"
+#include <cstring>
+#include <cstdlib>
 #include <iostream>
-#include <fcntl.h>
-#include <sys/stat.h>
+#include <iomanip>
 #include <algorithm>
 #include <vector>
 
 #ifdef _WIN32
 #include <windows.h>
 #else
-#include <sys/mman.h>
+#include <fcntl.h>
 #include <unistd.h>
+#include <sys/mman.h>
+#include <sys/stat.h>
 #endif
-
-struct elf64_ehdr {
+#define RST "\033[0m"
+#define GRY "\033[90m"
+#pragma pack(push, 1)
+struct Elf64_Ehdr {
     unsigned char e_ident[16];
     uint16_t e_type;
     uint16_t e_machine;
@@ -29,162 +34,274 @@ struct elf64_ehdr {
     uint16_t e_shstrndx;
 };
 
-struct elf64_phdr {
-    uint32_t p_type;
-    uint32_t p_flags;
-    uint64_t p_offset;
-    uint64_t p_vaddr;
-    uint64_t p_paddr;
-    uint64_t p_filesz;
-    uint64_t p_memsz;
-    uint64_t p_align;
+struct Elf64_Shdr {
+    uint32_t sh_name;
+    uint32_t sh_type;
+    uint64_t sh_flags;
+    uint64_t sh_addr;
+    uint64_t sh_offset;
+    uint64_t sh_size;
+    uint32_t sh_link;
+    uint32_t sh_info;
+    uint64_t sh_addralign;
+    uint64_t sh_entsize;
 };
+#pragma pack(pop)
 
-uint8_t* mem::data = nullptr;
-size_t mem::size = 0;
-uintptr_t mem::text_start = 0;
-uintptr_t mem::text_end = 0;
+#define ELFMAG "\177ELF"
+#define SELFMAG 4
+#define EM_AARCH64 183
+#define EM_X86_64 62
+
+namespace mem {
+    uint8_t* data = nullptr;
+    size_t size = 0;
+    size_t text_start = 0;
+    size_t text_end = 0;
+    size_t mapped_size = 0;
+    bool is_arm64 = false;
 
 #ifdef _WIN32
-static HANDLE h_file = INVALID_HANDLE_VALUE;
-static HANDLE h_map = NULL;
+    static HANDLE h_file = INVALID_HANDLE_VALUE;
+    static HANDLE h_map = NULL;
 #else
-static int file_fd = -1;
+    static int fd = -1;
 #endif
 
-bool mem::open(const char* path) {
-#ifdef _WIN32
-    h_file = CreateFileA(path, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
-    if (h_file == INVALID_HANDLE_VALUE) return false;
-    DWORD size_high = 0;
-    DWORD size_low = GetFileSize(h_file, &size_high);
-    mem::size = ((size_t)size_high << 32) | size_low;
-    h_map = CreateFileMappingA(h_file, NULL, PAGE_READONLY, size_high, size_low, NULL);
-    if (!h_map) { CloseHandle(h_file); return false; }
-    mem::data = (uint8_t*)MapViewOfFile(h_map, FILE_MAP_READ, 0, 0, 0);
-    if (!mem::data) { CloseHandle(h_map); CloseHandle(h_file); return false; }
-#else
-    file_fd = ::open(path, O_RDONLY);
-    if (file_fd < 0) return false;
-    struct stat sb;
-    if (fstat(file_fd, &sb) < 0) { ::close(file_fd); return false; }
-    mem::size = sb.st_size;
-    mem::data = (uint8_t*)mmap(NULL, mem::size, PROT_READ, MAP_PRIVATE, file_fd, 0);
-    if (mem::data == MAP_FAILED) { ::close(file_fd); return false; }
-#endif
-    if (mem::size < sizeof(elf64_ehdr)) { mem::close(); return false; }
-    elf64_ehdr* ehdr = (elf64_ehdr*)mem::data;
-    if (ehdr->e_ident[0] != 0x7F || ehdr->e_ident[1] != 'E' || ehdr->e_ident[2] != 'L' || ehdr->e_ident[3] != 'F') {
-        mem::close();
-        return false;
-    }
-    if (ehdr->e_phoff + ehdr->e_phnum * sizeof(elf64_phdr) > mem::size) { mem::close(); return false; }
-    elf64_phdr* phdr = (elf64_phdr*)(mem::data + ehdr->e_phoff);
-    for (int i = 0; i < ehdr->e_phnum; i++) {
-        if (phdr[i].p_type == 1 && (phdr[i].p_flags & 1) && (phdr[i].p_flags & 4)) {
-            mem::text_start = phdr[i].p_vaddr;
-            mem::text_end = phdr[i].p_vaddr + phdr[i].p_filesz;
-            break;
-        }
+    static inline bool is_adrp(uint32_t insn) {
+        return (insn & 0x9F000000) == 0x90000000;
     }
 
-    if (!mem::text_start || !mem::text_end) { mem::close(); return false; }
-    return true;
-}
+    static inline bool is_add_imm(uint32_t insn) {
+        return (insn & 0xFF000000) == 0x91000000;
+    }
 
-void mem::close() {
-    if (!mem::data) return;
+    static inline uint64_t decode_add_imm(uint32_t insn) {
+        return (insn >> 10) & 0xFFF;
+    }
+
+    static inline bool is_ldr_imm(uint32_t insn) {
+        return (insn & 0xFFC00000) == 0xB9400000;
+    }
+
+    static inline uint64_t decode_ldr_imm(uint32_t insn) {
+        return ((insn >> 10) & 0xFFF) << ((insn >> 30) & 1);
+    }
+
+    bool open(const char* path) {
 #ifdef _WIN32
-    UnmapViewOfFile(mem::data);
-    if (h_map) CloseHandle(h_map);
-    if (h_file != INVALID_HANDLE_VALUE) CloseHandle(h_file);
+        h_file = CreateFileA(path, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+        if (h_file == INVALID_HANDLE_VALUE) return false;
+        DWORD size_high = 0;
+        DWORD size_low = GetFileSize(h_file, &size_high);
+        size = ((size_t)size_high << 32) | size_low;
+        mapped_size = (size + 4095) & ~4095ULL;
+        h_map = CreateFileMappingA(h_file, NULL, PAGE_READONLY, size_high, size_low, NULL);
+        if (!h_map) { CloseHandle(h_file); return false; }
+        data = (uint8_t*)MapViewOfFile(h_map, FILE_MAP_READ, 0, 0, 0);
+        if (!data) { CloseHandle(h_map); CloseHandle(h_file); return false; }
 #else
-    munmap(mem::data, mem::size);
-    if (file_fd >= 0) ::close(file_fd);
+        fd = ::open(path, O_RDONLY);
+        if (fd < 0) return false;
+        struct stat st;
+        if (fstat(fd, &st) < 0) { ::close(fd); return false; }
+        size = st.st_size;
+        mapped_size = (size + 4095) & ~4095ULL;
+        data = (uint8_t*)mmap(nullptr, mapped_size, PROT_READ, MAP_PRIVATE, fd, 0);
+        if (data == MAP_FAILED) { ::close(fd); fd = -1; data = nullptr; return false; }
 #endif
-    mem::data = nullptr;
-}
 
-uintptr_t mem::find_str(const char* str) {
-    if (!mem::data || !str) return 0;
-    std::string s(str);
-    auto it = std::search(mem::data, mem::data + mem::size, s.begin(), s.end());
-    if (it == mem::data + mem::size) return 0;
-    return std::distance(mem::data, it);
-}
+        if (size < sizeof(Elf64_Ehdr)) { mem::close(); return false; }
+        
+        Elf64_Ehdr* elf = (Elf64_Ehdr*)data;
+        if (memcmp(elf->e_ident, ELFMAG, SELFMAG) != 0) { mem::close(); return false; }
 
-uintptr_t mem::find_bytes(const char* sig) {
-    if (!mem::data || !sig || !mem::text_start) return 0;
-    std::vector<int> pattern;
-    std::string signature(sig);
-    size_t pos = 0;
-    while ((pos = signature.find_first_not_of(' ', pos)) != std::string::npos) {
-        size_t next = signature.find_first_of(' ', pos);
-        std::string token = (next == std::string::npos) ? signature.substr(pos) : signature.substr(pos, next - pos);
-        if (token == "??" || token == "?") {
-            pattern.push_back(-1);
+        if (elf->e_machine == EM_AARCH64) {
+            is_arm64 = true;
+            std::cout << GRY << "[ARM64] " << RST;
+        } else if (elf->e_machine == EM_X86_64) {
+            is_arm64 = false;
+            std::cout << GRY << "[x86_64] " << RST;
         } else {
-            pattern.push_back(std::stoul(token, nullptr, 16));
+            std::cout << GRY << "[unknown arch] " << RST;
         }
-        if (next == std::string::npos) break;
-        pos = next;
-    }
 
-    if (pattern.empty()) return 0;
-    size_t end_search = mem::text_end - pattern.size();
-    for (size_t i = mem::text_start; i < end_search; ++i) {
-        bool match = true;
-        for (size_t j = 0; j < pattern.size(); ++j) {
-            if (pattern[j] != -1 && mem::data[i + j] != pattern[j]) {
-                match = false;
+        if (elf->e_shoff + elf->e_shnum * sizeof(Elf64_Shdr) > size) { mem::close(); return false; }
+        Elf64_Shdr* shdrs = (Elf64_Shdr*)(data + elf->e_shoff);
+        char* shstrtab = (char*)(data + shdrs[elf->e_shstrndx].sh_offset);
+
+        text_start = 0;
+        text_end = 0;
+        for (int i = 0; i < elf->e_shnum; i++) {
+            if (strcmp(&shstrtab[shdrs[i].sh_name], ".text") == 0) {
+                text_start = shdrs[i].sh_offset;
+                text_end = text_start + shdrs[i].sh_size;
                 break;
             }
         }
-        if (match) return i;
-    }
-    return 0;
-}
 
-std::vector<uintptr_t> mem::find_xrefs(uintptr_t target_addr) {
-    std::vector<uintptr_t> xrefs;
-    if (!mem::data || !mem::text_start || !target_addr) return xrefs;
-    size_t search_limit = mem::text_end - 4;
-    for (size_t i = mem::text_start & ~3ULL; i < search_limit; i += 4) {
-        uint32_t insn = *(uint32_t*)(mem::data + i);
-        if ((insn & 0x9F000000) == 0x90000000) {
-            int64_t immhi = (int64_t)((insn >> 5) & 0x7FFFF);
-            int64_t immlo = (int64_t)((insn >> 29) & 3);
-            int64_t imm = (immhi << 2) | immlo;
-            if (imm & 0x100000) imm |= 0xFFFFFFFFFFF00000LL;
-            uintptr_t page = (i & ~0xFFFULL) + (imm << 12);
-            uint32_t next_insn = *(uint32_t*)(mem::data + i + 4);
-            if ((next_insn & 0xFFC00000) == 0x91000000) {
-                uintptr_t offset = (next_insn >> 10) & 0xFFF;
-                if (page + offset == target_addr) {
-                    xrefs.push_back(i);
+        if (!text_start || !text_end) { mem::close(); return false; }
+        return true;
+    }
+
+    void close() {
+#ifdef _WIN32
+        if (data) { UnmapViewOfFile(data); data = nullptr; }
+        if (h_map) { CloseHandle(h_map); h_map = NULL; }
+        if (h_file != INVALID_HANDLE_VALUE) { CloseHandle(h_file); h_file = INVALID_HANDLE_VALUE; }
+#else
+        if (data) { munmap(data, mapped_size); data = nullptr; }
+        if (fd >= 0) { ::close(fd); fd = -1; }
+#endif
+        size = 0;
+        is_arm64 = false;
+    }
+
+    uintptr_t find_str(const char* str) {
+        size_t len = strlen(str);
+        if (!len || size < len) return 0;
+
+        for (size_t i = 0; i <= size - len; i++) {
+            if (memcmp(data + i, str, len) == 0)
+                return i;
+        }
+        return 0;
+    }
+
+    uintptr_t find_bytes(const char* sig) {
+        std::vector<uint8_t> bytes;
+        std::vector<bool> mask;
+
+        const char* p = sig;
+        while (*p) {
+            while (*p == ' ') p++;
+            if (!*p) break;
+            if (p[0] == '?' && p[1] == '?') {
+                bytes.push_back(0);
+                mask.push_back(false);
+                p += 2;
+            } else {
+                bytes.push_back((uint8_t)strtol(p, nullptr, 16));
+                mask.push_back(true);
+                p += 2;
+            }
+        }
+
+        size_t len = bytes.size();
+        if (!len || text_end < text_start + len) return 0;
+
+        size_t limit = text_end - len;
+        for (size_t i = text_start; i <= limit; i++) {
+            bool match = true;
+            for (size_t k = 0; k < len && match; k++)
+                if (mask[k] && data[i + k] != bytes[k]) match = false;
+            if (match) return i;
+        }
+        return 0;
+    }
+
+    std::vector<uintptr_t> find_xrefs(uintptr_t target) {
+        std::vector<uintptr_t> results;
+        if (!text_start || !text_end) return results;
+
+        if (is_arm64) {
+            size_t begin = (text_start + 3) & ~3ULL;
+            size_t end = text_end - 8;
+
+            for (size_t i = begin; i < end; i += 4) {
+                uint32_t* code = (uint32_t*)(data + i);
+                uint32_t insn1 = code[0];
+                uint32_t insn2 = code[1];
+
+                if (!is_adrp(insn1)) continue;
+
+                uint64_t add_val = 0;
+                if (is_add_imm(insn2)) {
+                    add_val = decode_add_imm(insn2);
+                } else if (is_ldr_imm(insn2)) {
+                    add_val = decode_ldr_imm(insn2);
+                } else {
+                    continue;
+                }
+
+                uint64_t page_offset = target & 0xFFF;
+                if (page_offset == add_val) {
+                    results.push_back(i);
+                    if (results.size() >= 8) break;
                 }
             }
-            else if ((next_insn & 0xFFC00000) == 0xF9400000) {
-                uintptr_t offset = ((next_insn >> 10) & 0xFFF) << 3;
-                if (page + offset == target_addr) {
-                    xrefs.push_back(i);
+        } else {
+            const uint8_t* d = data;
+            size_t end = text_end - 7;
+
+            for (size_t i = text_start; i < end; i++) {
+                if ((d[i] & 0xF8) == 0x48) {
+                    uint8_t b1 = d[i + 1];
+                    if ((b1 & 0xF6) == 0x84) {
+                        uint8_t b2 = d[i + 2];
+                        if ((b2 & 0xC7) == 0x05) {
+                            uint32_t disp = *(uint32_t*)(d + i + 3);
+                            if (i + 7 + disp == target) results.push_back(i);
+                        }
+                    } else if (b1 == 0x8D) {
+                        uint8_t b2 = d[i + 2];
+                        if ((b2 & 0xC7) == 0x05) {
+                            uint32_t disp = *(uint32_t*)(d + i + 3);
+                            if (i + 7 + disp == target) results.push_back(i);
+                        }
+                    }
+                } else if (d[i] == 0x8D) {
+                    uint8_t b1 = d[i + 1];
+                    if ((b1 & 0xC7) == 0x05) {
+                        uint32_t disp = *(uint32_t*)(d + i + 2);
+                        if (i + 6 + disp == target) results.push_back(i);
+                    }
                 }
             }
         }
+        return results;
     }
-    return xrefs;
-}
 
-uintptr_t mem::find_func(uintptr_t from) {
-    if (!mem::data || !mem::text_start || from < mem::text_start) return 0;
-    size_t lo = (from > mem::text_start + 1024) ? from - 1024 : mem::text_start;
-    lo = (lo + 3) & ~3ULL;
+    uintptr_t find_func(uintptr_t from) {
+        if (from < text_start || from >= text_end) return 0;
 
-    for (size_t j = (from & ~3ULL); j >= lo; j -= 4) {
-        uint32_t insn = *(uint32_t*)(mem::data + j);
-        bool is_stp = (insn & 0xFF800000) == 0xA9800000; 
-        bool is_sub = (insn & 0xFF800000) == 0xD1000000; 
-        if (is_stp || is_sub) return j;
+        if (is_arm64) {
+            const uint8_t* d = data;
+            int lo = (int)from - 8192;
+            if (lo < (int)text_start) lo = (int)text_start;
+
+            size_t start_i = (from & ~3ULL);
+            for (int i = (int)start_i; i >= lo; i -= 4) {
+                uint32_t insn = *(uint32_t*)(d + i);
+                
+                if ((insn & 0xFFC00000) == 0xA9800000 ||
+                    (insn & 0xFF800000) == 0xD1000000) {
+                    return i;
+                }
+                
+                if ((insn & 0xFFFFFC00) == 0xD65F0000 ||
+                    (insn & 0xFC000000) == 0x14000000) {
+                    if (i + 4 <= (int)from) return i + 4;
+                }
+            }
+            return 0;
+        } else {
+            const uint8_t* d = data;
+            int lo = (int)from - 16384;
+            if (lo < (int)text_start) lo = (int)text_start;
+
+            for (int i = (int)from; i >= lo; i--) {
+                if (d[i] == 0x55 && d[i+1] == 0x48 && d[i+2] == 0x89 && d[i+3] == 0xE5)
+                    return i;
+            }
+            for (int i = (int)from; i > lo; i--) {
+                if (d[i] == 0x55 && (d[i+1] == 0x41 || d[i+1] == 0x53)) {
+                    uint8_t prev = d[i - 1];
+                    if (prev < 0x40 || prev > 0x4F)
+                        return i;
+                }
+            }
+            return 0;
+        }
     }
-    return 0;
 }
