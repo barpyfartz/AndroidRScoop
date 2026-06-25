@@ -6,6 +6,10 @@
 #include <iomanip>
 #include <vector>
 
+#ifdef _WIN32
+#include <windows.h>
+#endif
+
 #define RST "\033[0m"
 #define GRY "\033[90m"
 #define GRN "\033[92m"
