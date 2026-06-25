@@ -14,5 +14,5 @@ Roblox internal offset dumper base made for android. Tested only on Arch Linux
 3. done
 
 You can install apk from:
-[APKMirror](https://www.apkmirror.com/apk/roblox-corporation/roblox/nigger/) (BASE APK. NOT BUNDLE)
-[UpToDown](https://roblox.en.uptodown.com/android)
++ [APKMirror](https://www.apkmirror.com/apk/roblox-corporation/roblox/nigger/) (BASE APK. NOT BUNDLE)
++ [UpToDown](https://roblox.en.uptodown.com/android)
