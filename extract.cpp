@@ -87,26 +87,22 @@ static bool extract_file_from_apk(const std::vector<uint8_t>& apk,
 std::string extract_so_from_apk(const std::string& apk_path, const std::string& arch) {
     std::vector<uint8_t> apk, so_data;
     if (!read_file(apk_path, apk)) {
-        std::cerr << GRY "failed to read APK: " << apk_path << RST "\n";
+        std::cerr << "\n" << GRY << "failed to read APK: " << apk_path << RST "\n";
         return "";
     }
-
     std::string lib_path = "lib/" + arch + "/libroblox.so";
     
     if (!extract_file_from_apk(apk, lib_path, so_data)) {
-        std::cerr << GRY "libroblox.so not found in APK for " << arch << RST "\n";
+        std::cerr << "\n" << GRY << "libroblox.so not found in APK for " << arch << RST "\n";
         return "";
     }
-
-    std::string out_path = "libroblox_" + arch + ".so";
+    std::string out_path = "libroblox.so";
     std::ofstream out(out_path, std::ios::binary);
     if (!out) {
-        std::cerr << GRY "failed to write " << out_path << RST "\n";
+        std::cerr << "\n" << GRY << "failed to write " << out_path << RST "\n";
         return "";
     }
     out.write((char*)so_data.data(), so_data.size());
     out.close();
-
-    std::cout << GRY "extracted: " << out_path << " (" << so_data.size() << " bytes)" << RST "\n";
     return out_path;
 }
