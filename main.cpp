@@ -70,7 +70,7 @@ int main(int argc, char** argv) {
     bool do_debug = false;
 
     int arg_start = 1;
-    if (std::string(argv[1]) == "--debug") { // use ts as ./dumper --debug ...(flags)
+    if (std::string(argv[1]) == "--debug") {
         do_debug = true;
         arg_start = 2;
     }
@@ -81,6 +81,10 @@ int main(int argc, char** argv) {
         if (argc <= arg_start + 1) { print_usage(argv[0]); return 1; }
         so_path = argv[arg_start + 1];
     } else {
+#ifdef DISABLE_APK_EXTRACT
+        std::cerr << "APK extraction is disabled on shindows builds use --so <pathtolibroblox.so>. to get it just unpack the apk as archive, open /lib directory in it and grab it from v8a\n";
+        return 1;
+#else
         std::string apk_path = argv[arg_start];
         std::string arch = (argc > arg_start + 1) ? argv[arg_start + 1] : "arm64-v8a";
         
@@ -89,6 +93,7 @@ int main(int argc, char** argv) {
         so_path = extract_so_from_apk(apk_path, arch);
         if (so_path.empty()) return 1;
         delete_after = true;
+#endif
     }
 
     if (!mem::open(so_path.c_str())) {
