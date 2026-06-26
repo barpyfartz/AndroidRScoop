@@ -27,7 +27,23 @@ std::vector<scan> scans = {
     {"luauloadinternal", "", "?? ?? ?? b4 fd 7b bc a9 f8 5f 01 a9 f6 57 02 a9 f4 4f 03 a9 fd 03 00 91", 0, 0, false},
     {"luauloadcorescripts", "", "fd 7b ba a9 fc 6f 01 a9 fa 67 02 a9 f8 5f 03 a9 f6 57 04 a9 f4 4f 05 a9 fd 03 00 91 ff 83 06 d1", 0, 0, false},
     {"validateandsetupcaps", "", "ff 83 02 d1 fd 7b 06 a9 f8 5f 07 a9 f6 57 08 a9 f4 4f 09 a9", 0, 0, false},
-
+    {"luaG_runerror",           "attempt to index %s with '%s'",                    "", 0, 0, false},
+    {"lua_resume",              "cannot resume dead coroutine",                      "", 0, 0, false},
+    {"lua_resumefromsuspended", "cannot resume non-suspended coroutine",             "", 0, 0, false},
+    {"luaH_settable",           "table index is nil",                                "", 0, 0, false},
+    {"stackoverflow",           "stack overflow (%s)",                               "", 0, 0, false},
+    {"invalidkeynext",          "invalid key to 'next'",                             "", 0, 0, false},
+    {"newindex",                "__newindex",                                         "", 0, 0, false},
+    {"namecallhandler",         "__namecall",                                        "", 0, 0, false},
+    {"fireserver",              "FireServer",                                        "", 0, 0, false},
+    {"fireallclients",          "FireAllClients",                                    "", 0, 0, false},
+    {"invokeserver",            "InvokeServer can only be called from the client",   "", 0, 0, false},
+    {"resumewaitingscripts",    "WaitingHybridScriptsJob",                           "", 1, 0, false},
+    {"getscheduler",            "", "ff c3 01 d1 fd 7b 04 a9 f5 2b 00 f9 f4 4f 06 a9 fd 03 01 91 ?? ?? ?? ?? b5 26 44 f9 a8 02 40 f9 a8 83 1f f8 20 08 00 b4 ?? ?? ?? ?? 08 b1 39 91 f3 03 00 aa 08 fd df 08 48 03 00 37 e0 03 13 aa", 0, 0, false},
+    {"setthreadidentity",       "", "fd 7b bd a9 f6 57 01 a9 f4 4f 02 a9 fd 03 00 91 f3 03 02 aa f4 03 01 2a 3f 04 00 71 f5 03 00 aa", 0, 0, false},
+    {"getthreadidentity",       "", "08 a4 43 a9 08 01 09 cb 00 fd 44 d3 c0 03 5f d6", 0, 0, false},
+    {"newproxy",                "", "fd 7b be a9 f3 0b 00 f9 fd 03 00 91 21 00 80 52 f3 03 00 aa ?? ?? ?? ?? 08 78 1f 12 1f 19 00 71", 0, 0, false},
+    {"loadstring",              "", "ff 03 02 d1 fd 7b 04 a9 f7 2b 00 f9 f6 57 06 a9 f4 4f 07 a9 fd 03 01 91 ?? ?? ?? ?? f3 03 00 aa ?? ?? ?? ?? e8 02 40 f9 a8 83 1f f8 ?? ?? ?? ?? f5 03 00 aa 00 a0 42 a9 88 00 00 b4 a1 0e 40 f9 00 01 3f d6 a0 fe 02 a9", 0, 0, false},
 };
 
 static inline bool is_bl(uint32_t insn) {
@@ -77,6 +93,12 @@ static uintptr_t bl_down(uintptr_t from, int n) {
     return 0;
 }
 
+static uintptr_t to_func(uintptr_t candidate) {
+    if (!candidate) return 0;
+    uintptr_t f = mem::find_func(candidate);
+    return f ? f : candidate;
+}
+
 uintptr_t process(const scan& s, uintptr_t addr) {
     if (!addr) return 0;
 
@@ -89,19 +111,19 @@ uintptr_t process(const scan& s, uintptr_t addr) {
             if (s.up == 0 && s.down == 0) {
                 result = mem::find_func(target);
             } else if (s.up > 0) {
-                result = bl_up(target, s.up);
+                result = to_func(bl_up(target, s.up));
             } else if (s.down > 0) {
-                result = bl_down(target, s.down);
+                result = to_func(bl_down(target, s.down));
             }
             if (result) return result;
         }
     } else {
         if (s.up == 0 && s.down == 0) {
-            return addr;
+            return to_func(addr);
         } else if (s.up > 0) {
-            return bl_up(addr, s.up);
+            return to_func(bl_up(addr, s.up));
         } else if (s.down > 0) {
-            return bl_down(addr, s.down);
+            return to_func(bl_down(addr, s.down));
         }
     }
 
