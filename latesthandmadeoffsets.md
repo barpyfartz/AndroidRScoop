@@ -1,5 +1,5 @@
-print -> 0x39A6374
-game_loaded -> 0x217B5D0
+print -> 0x39A6374;
+game_loaded -> 0x217B5D0;
 on_game_leave -> 0x2638674
 scriptstart -> 0x20C1870
 fireproximityprompt -> 0x3E21348
