@@ -110,9 +110,7 @@ namespace mem {
         data = (uint8_t*)mmap(nullptr, mapped_size, PROT_READ, MAP_PRIVATE, fd, 0);
         if (data == MAP_FAILED) { ::close(fd); fd = -1; data = nullptr; return false; }
 #endif
-
         if (size < sizeof(Elf64_Ehdr)) { mem::close(); return false; }
-        
         Elf64_Ehdr* elf = (Elf64_Ehdr*)data;
         if (memcmp(elf->e_ident, ELFMAG, SELFMAG) != 0) { mem::close(); return false; }
 
@@ -125,11 +123,9 @@ namespace mem {
         } else {
             std::cout << GRY << "[unknown arch] " << RST;
         }
-
         if (elf->e_shoff + elf->e_shnum * sizeof(Elf64_Shdr) > size) { mem::close(); return false; }
         Elf64_Shdr* shdrs = (Elf64_Shdr*)(data + elf->e_shoff);
         char* shstrtab = (char*)(data + shdrs[elf->e_shstrndx].sh_offset);
-
         text_start = 0;
         text_end = 0;
         for (int i = 0; i < elf->e_shnum; i++) {
@@ -160,7 +156,6 @@ namespace mem {
     uintptr_t find_str(const char* str) {
         size_t len = strlen(str);
         if (!len || size < len) return 0;
-
         for (size_t i = 0; i <= size - len; i++) {
             if (memcmp(data + i, str, len) == 0)
                 return i;
@@ -171,7 +166,6 @@ namespace mem {
     uintptr_t find_bytes(const char* sig) {
         std::vector<uint8_t> bytes;
         std::vector<bool> mask;
-
         const char* p = sig;
         while (*p) {
             while (*p == ' ') p++;
@@ -189,7 +183,6 @@ namespace mem {
 
         size_t len = bytes.size();
         if (!len || text_end < text_start + len) return 0;
-
         size_t limit = text_end - len;
         for (size_t i = text_start; i <= limit; i++) {
             bool match = true;
@@ -203,17 +196,19 @@ namespace mem {
     std::vector<uintptr_t> find_xrefs(uintptr_t target) {
         std::vector<uintptr_t> results;
         if (!text_start || !text_end) return results;
-
         if (is_arm64) {
             size_t begin = (text_start + 3) & ~3ULL;
             size_t end = text_end - 8;
-
             for (size_t i = begin; i < end; i += 4) {
                 uint32_t* code = (uint32_t*)(data + i);
                 uint32_t insn1 = code[0];
                 uint32_t insn2 = code[1];
-
                 if (!is_adrp(insn1)) continue;
+                uint64_t immhi = (insn1 >> 5) & 0x7FFFF;
+                uint64_t immlo = (insn1 >> 29) & 3;
+                int64_t imm = (int64_t)((immhi << 2) | immlo) << 12;
+                if (imm & (1LL << 32)) imm |= ~((1LL << 33) - 1);
+                uint64_t page_base = (i & ~0xFFFULL) + (uint64_t)imm;
 
                 uint64_t add_val = 0;
                 if (is_add_imm(insn2)) {
@@ -224,8 +219,7 @@ namespace mem {
                     continue;
                 }
 
-                uint64_t page_offset = target & 0xFFF;
-                if (page_offset == add_val) {
+                if (page_base + add_val == (uint64_t)target) {
                     results.push_back(i);
                     if (results.size() >= 8) break;
                 }
@@ -233,7 +227,6 @@ namespace mem {
         } else {
             const uint8_t* d = data;
             size_t end = text_end - 7;
-
             for (size_t i = text_start; i < end; i++) {
                 if ((d[i] & 0xF8) == 0x48) {
                     uint8_t b1 = d[i + 1];
@@ -262,26 +255,40 @@ namespace mem {
         return results;
     }
 
+    static inline bool is_func_prologue(uint32_t insn) {
+        return (insn & 0xFFC00000) == 0xA9800000 ||
+               (insn & 0xFF8003FF) == 0xD10003FF ||
+               insn == 0xD503233F;
+    }
+
     uintptr_t find_func(uintptr_t from) {
         if (from < text_start || from >= text_end) return 0;
 
         if (is_arm64) {
             const uint8_t* d = data;
-            int lo = (int)from - 8192;
+            int lo = (int)from - 65536;
             if (lo < (int)text_start) lo = (int)text_start;
 
             size_t start_i = (from & ~3ULL);
             for (int i = (int)start_i; i >= lo; i -= 4) {
                 uint32_t insn = *(uint32_t*)(d + i);
-                
-                if ((insn & 0xFFC00000) == 0xA9800000 ||
-                    (insn & 0xFF800000) == 0xD1000000) {
+                if (is_func_prologue(insn))
                     return i;
-                }
-                
-                if ((insn & 0xFFFFFC00) == 0xD65F0000 ||
-                    (insn & 0xFC000000) == 0x14000000) {
-                    if (i + 4 <= (int)from) return i + 4;
+                bool is_ret = (insn & 0xFFFFFC00) == 0xD65F0000;
+                bool is_br  = (insn & 0xFFFFFC00) == 0xD61F0000;
+                bool is_b   = (insn & 0xFC000000) == 0x14000000;
+
+                if ((is_ret || is_br || is_b) && i + 4 <= (int)from) {
+                    if (is_b) {
+                        int64_t imm26 = (int64_t)(insn & 0x3FFFFFF);
+                        if (imm26 & 0x2000000) imm26 |= ~(int64_t)0x3FFFFFF;
+                        int64_t bt = (int64_t)i + (imm26 << 2);
+                        if (bt >= (int64_t)lo && bt <= (int64_t)from)
+                            continue;
+                    }
+                    uint32_t next = *(uint32_t*)(d + i + 4);
+                    if (is_func_prologue(next))
+                        return i + 4;
                 }
             }
             return 0;
