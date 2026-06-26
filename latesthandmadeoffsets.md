@@ -1,25 +1,42 @@
-+ print -> 0x2617DEC
-+ game_loaded -> 0x26FEDF0
-+ on_game_leave -> 0x1BE0E80
-+ scriptstart -> 0x20C1870
-+ fireproximityprompt -> 0x1C6483C
-+ firetouchinterest -> 0x1C3D07C
-+ jobstart -> 0x1BDB240
-+ jobstop -> 0x1BE3BA4
-+ rbxspawn -> 0x1C41254
-+ taskdesynchronize -> 0x1C1A738
-+ rawscheduler -> 0x5C796C8
-+ taskschedulerfps -> 0x1BD5A88
-+ lockviolationcrash -> 0x1D600EC
-+ lockviolationscriptcrash -> 0x1C0657C
-+ luastepinternaloverride -> 0x1C0868C
-+ hashtablelookup -> 0x1D88DAC
-+ getglobalstateforinstance -> 0x5C85C60
-+ enableloadmodule -> 0x1C08FFC
-+ luauregistermethod -> 0x1C047C8
-+ stdstringconstructor -> 0x1BD9268
-+ luauloadinternal -> 0x1BD4DA8
-+ luauloadcorescripts -> 0x1D64D14
-+ validateandsetupcaps -> 0x1BF1B58
+print -> 0x39A6374
+game_loaded -> 0x217B5D0
+on_game_leave -> 0x2638674
+scriptstart -> 0x20C1870
+fireproximityprompt -> 0x3E21348
+firetouchinterest -> 0x44A6C60
+jobstart -> 0x1F4623C
+jobstop -> 0x1F4647C
+rbxspawn -> 0x1C411CC
+taskdesynchronize -> 0x3891EBC
+rawscheduler -> 0x5C85C60
+taskschedulerfps -> 0x1BD5A88
+lockviolationcrash -> 0x37CA820
+lockviolationscriptcrash -> 0x1C0657C
+luastepinternaloverride -> 0x1C0868C
+hashtablelookup -> 0x37D0950
+getglobalstateforinstance -> 0x25C7470
+enableloadmodule -> 0x1C08FFC
+luauregistermethod -> 0x1C047C8
+stdstringconstructor -> 0x1BD9268
+luauloadinternal -> 0x1BD4C78
+luauloadcorescripts -> 0x1D64D14
+validateandsetupcaps -> 0x1BF1B58
+luaG_runerror -> 0x58F5080
+lua_resume -> 0x58F6088
+lua_resumefromsuspended -> 0x58F5FEC
+luaH_settable -> 0x2112964
+stackoverflow -> 0x2143990
+invalidkeynext -> 0x2139654
+newindex -> 0x1E6AA38
+namecallhandler -> 0x2113DCC
+fireserver -> 0x1D1C378
+fireallclients -> 0x1D1C378
+invokeserver -> 0x40E1A2C
+resumewaitingscripts -> 0x38A8580
+getscheduler -> 0x1BD75B8
+setthreadidentity -> 0x2127064
+getthreadidentity -> 0x21268C4
+newproxy -> 0x58EEBF4
+loadstring -> 0x38CCF40
 
-+ 1.38s  dumped by rscoop
++ 12.12s  dumped by rscoop
