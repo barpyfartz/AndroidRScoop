@@ -1,5 +1,5 @@
 # AndroidRScoop
-Roblox internal offset dumper **base** made for android. Tested only on Arch Linux
+Dumper of roblox (android version). Should work at windows but tested only on linux based systems
 
 # Usage (Windows)
 1. Download [dumper.exe](https://github.com/barpyfartz/AndroidRScoop/releases/latest) and android roblox apk
