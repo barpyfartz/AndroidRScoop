@@ -91,12 +91,17 @@ int main(int argc, char** argv) {
 #else
         std::string apk_path = argv[arg_start];
         std::string arch = (argc > arg_start + 1) ? argv[arg_start + 1] : "arm64-v8a";
-        
+
         std::cout << GRY << "loading..." << RST << std::flush;
-        
+
+        std::string rblx_ver = get_roblox_version(apk_path);
+
         so_path = extract_so_from_apk(apk_path, arch);
         if (so_path.empty()) return 1;
         delete_after = true;
+
+        if (!rblx_ver.empty())
+            std::cout << "\r" << std::string(15, ' ') << "\r" << GRY << "version: " << RST << rblx_ver << "\n";
 #endif
     }
 
@@ -104,9 +109,7 @@ int main(int argc, char** argv) {
         std::cerr << "err open: " << so_path << "\n";
         return 1;
     }
-
     std::cout << "\r" << std::string(15, ' ') << "\r" << std::flush;
-
     if (do_debug) {
         for (const auto& s : scans) debug_scan(s);
         mem::close();
@@ -118,12 +121,28 @@ int main(int argc, char** argv) {
 
     std::vector<uintptr_t> addresses(scans.size());
     for (size_t i = 0; i < scans.size(); i++) {
-        addresses[i] = scans[i].sig.empty() ? mem::find_str(scans[i].pattern.c_str()) : mem::find_bytes(scans[i].sig.c_str());
+        if (scans[i].pattern.empty() && scans[i].sig.empty()) {
+            addresses[i] = 0;
+        } else {
+            addresses[i] = scans[i].sig.empty() ? mem::find_str(scans[i].pattern.c_str()) : mem::find_bytes(scans[i].sig.c_str());
+        }
     }
+
+    std::vector<uintptr_t> results(scans.size(), 0);
+    for (size_t i = 0; i < scans.size(); i++) {
+        if (scans[i].pattern.empty() && scans[i].sig.empty()) {
+            results[i] = 0;
+        } else {
+            results[i] = process(scans[i], addresses[i]);
+        }
+    }
+
+    resolve_tasks(scans, results);
+    resolve_fields(scans, results);
 
     int found = 0;
     for (size_t i = 0; i < scans.size(); i++) {
-        uintptr_t result = process(scans[i], addresses[i]);
+        uintptr_t result = results[i];
         if (result) found++;
 
         std::cout << CYN << scans[i].name << RST " " GRY "->" RST " ";
@@ -139,7 +158,7 @@ int main(int argc, char** argv) {
     std::cout << "\n" << GRN << "+" << RST " " << GRY
               << std::fixed << std::setprecision(2)
               << elapsed / 1000.0 << "s" << RST "  "
-              << "dumped by rscoop\n";
+              << "dumped by rscoop, (opensource, u can get it on github)\n";
 
     mem::close();
     if (delete_after) delete_file(so_path);
