@@ -51,7 +51,7 @@ std::vector<scan> scans = {
     {"setthreadidentity",       "", "fd 7b bd a9 f6 57 01 a9 f4 4f 02 a9 fd 03 00 91 f3 03 02 aa f4 03 01 2a 3f 04 00 71 f5 03 00 aa", 0, 0, false},
     {"getthreadidentity",       "", "08 ?? 40 f9 09 ?? 40 f9 08 01 09 cb 00 fd 44 d3 c0 03 5f d6", 0, 0, false},
     {"newproxy",                "", "fd 7b be a9 f3 0b 00 f9 fd 03 00 91 21 00 80 52 f3 03 00 aa ?? ?? ?? ?? 08 78 1f 12 1f 19 00 71", 0, 0, false},
-    {"loadstring",              "", "ff 03 02 d1 fd 7b 04 a9 f7 2b 00 f9 f6 57 06 a9 f4 4f 07 a9 fd 03 01 91 ?? ?? ?? ?? f3 03 00 aa ?? ?? ?? ?? e8 02 40 f9 a8 83 1f f8 ?? ?? ?? ?? f5 03 00 aa 00 a0 42 a9 88 00 00 b4 a1 0e 40 f9 00 01 3f d6 a0 fe 02 a9", 0, 0, false},
+    {"loadstring",           "loadstring() is not available",                               "", 0, 0, false},
     {"getfenv", "", "fd 7b be a9 f3 0b 00 f9 fd 03 00 91 f3 03 00 aa ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? 01 00 90 52 ?? ?? ?? ?? e0 03 13 aa 21 00 80 52", 0, 0, false},
     {"setfenv", "", "fd 7b be a9 f3 0b 00 f9 fd 03 00 91 f3 03 00 aa ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? 01 00 90 52 ?? ?? ?? ?? e0 03 13 aa 41 00 80 52", 0, 0, false},
     {"luaG_aritherror", "", "fd 7b bd a9 f6 57 01 a9 f4 4f 02 a9 fd 03 00 91 f5 03 03 2a f6 03 02 aa f3 03 00 aa ?? ?? ?? ?? f4 03 00 aa e0 03 13 aa e1 03 16 aa", 0, 0, false},
