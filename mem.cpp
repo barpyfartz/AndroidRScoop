@@ -47,7 +47,6 @@ struct Elf64_Shdr {
     uint64_t sh_entsize;
 };
 #pragma pack(pop)
-
 #define ELFMAG "\177ELF"
 #define SELFMAG 4
 #define EM_AARCH64 183
