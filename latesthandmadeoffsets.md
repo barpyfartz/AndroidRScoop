@@ -52,6 +52,9 @@ setfenv -> 0x398448C
 luaG_aritherror -> 0x5AC3340
 luagetfield -> 0x5ABAC1C
 luasetfield -> 0x21A80C0
+luau_execute -> 0x5ACF33C
+luaD_throw -> 0x5AC3F44
+luaC_step -> 0x21ADDA4
 
-+ 2.36s  dumped by rscoop, (opensource, u can get it on github)
++ 3.07s  dumped by rscoop, (opensource, u can get it on github)
 ```
