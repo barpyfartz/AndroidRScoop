@@ -16,7 +16,7 @@ Roblox internal offset dumper **base** made for android. Tested only on Arch Lin
 <img width="320" height="120" alt="image" src="https://github.com/user-attachments/assets/755ea4af-9f8d-4cee-bebc-028651291f1e" />
 
 You can install apk from:
-+ [APKMirror](https://www.apkmirror.com/apk/roblox-corporation/roblox/nigger/) (BASE APK. NOT BUNDLE)
++ [APKMirror](https://www.apkmirror.com/apk/roblox-corporation/roblox/nigger/) (if you installing ARM bundle pick split apk, not base)
 + [UpToDown](https://roblox.en.uptodown.com/android)
 
 Also you can check latest handdumped offsets at [latesthandmadeoffsets.md](https://github.com/barpyfartz/AndroidRScoop/blob/main/latesthandmadeoffsets.md)
