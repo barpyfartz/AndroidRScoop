@@ -56,7 +56,10 @@ std::vector<scan> scans = {
     {"setfenv", "", "fd 7b be a9 f3 0b 00 f9 fd 03 00 91 f3 03 00 aa ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? 01 00 90 52 ?? ?? ?? ?? e0 03 13 aa 41 00 80 52", 0, 0, false},
     {"luaG_aritherror", "", "fd 7b bd a9 f6 57 01 a9 f4 4f 02 a9 fd 03 00 91 f5 03 03 2a f6 03 02 aa f3 03 00 aa ?? ?? ?? ?? f4 03 00 aa e0 03 13 aa e1 03 16 aa", 0, 0, false},
     {"luagetfield", "", "", 0, 0, false}, // d
-    {"luasetfield", "", "", 0, 0, false}
+    {"luasetfield", "", "", 0, 0, false},
+    {"luau_execute", "", "", 0, 0, false}, // skidded from my ios dumper
+    {"luaD_throw", "", "", 0, 0, false},
+    {"luaC_step", "", "", 0, 0, false}
 };
 
 static inline bool is_bl(uint32_t insn) {
@@ -357,5 +360,198 @@ void resolve_fields(const std::vector<scan>& scans, std::vector<uintptr_t>& resu
         } else if (scans[i].name == "luagetfield") {
             results[i] = addr_getfield;
         }
+    }
+}
+
+static inline bool is_func_prologue_vm(uint32_t insn) {
+    return (insn & 0xFFC00000) == 0xA9800000 ||
+           (insn & 0xFF8003FF) == 0xD10003FF ||
+           insn == 0xD503233F;
+}
+
+static size_t next_func_addr_vm(size_t addr) {
+    size_t curr = (addr + 4) & ~3ULL;
+    while (curr < mem::text_end) {
+        uint32_t insn = *(uint32_t*)(mem::data + curr);
+        if (is_func_prologue_vm(insn)) return curr;
+        curr += 4;
+    }
+    return mem::text_end;
+}
+
+void resolve_vm_offsets(const std::vector<scan>& scans, std::vector<uintptr_t>& results) {
+    if (!mem::is_arm64) return;
+
+    uintptr_t lua_resume = 0;
+    uintptr_t luaG_runerror = 0;
+    for (size_t i = 0; i < scans.size(); ++i) {
+        if (scans[i].name == "luaresume") lua_resume = results[i];
+        else if (scans[i].name == "luaG_runerror") luaG_runerror = results[i];
+    }
+
+    uintptr_t luau_execute = 0;
+    uintptr_t luaD_throw = 0;
+    uintptr_t luaC_step = 0;
+
+    // 1. Resolve luau_execute
+    {
+        uintptr_t curr_func = 0;
+        int count = 0;
+        int max_count = 0;
+        for (size_t pc = mem::text_start; pc < mem::text_end; pc += 4) {
+            uint32_t insn = *(uint32_t*)(mem::data + pc);
+            if (is_func_prologue_vm(insn)) {
+                if (curr_func != 0 && count > max_count) {
+                    size_t size = (pc - curr_func) / 4;
+                    if (size > 1000) {
+                        luau_execute = curr_func;
+                        max_count = count;
+                    }
+                }
+                curr_func = pc;
+                count = 0;
+            }
+
+            if (curr_func != 0) {
+                if ((insn & 0xffc00c00) == 0xb8400400) {
+                    uint32_t rt = insn & 0x1f;
+                    uint32_t rn = (insn >> 5) & 0x1f;
+                    uint32_t imm9 = (insn >> 12) & 0x1ff;
+                    if (rt != 31 && rn != 31 && imm9 == 4) {
+                        count++;
+                    }
+                }
+            }
+        }
+        if (curr_func != 0 && count > max_count) {
+            size_t size = (mem::text_end - curr_func) / 4;
+            if (size > 1000) {
+                luau_execute = curr_func;
+            }
+        }
+    }
+
+    // 2. Resolve luaD_throw
+    if (luaG_runerror) {
+        uintptr_t body_candidate = 0;
+        for (size_t pc = luaG_runerror; pc < luaG_runerror + 128 && pc < mem::text_end; pc += 4) {
+            uint32_t insn = *(uint32_t*)(mem::data + pc);
+            if (is_bl(insn)) {
+                uintptr_t target = decode_bl(insn, pc);
+                if (target >= mem::text_start && target < mem::text_end) {
+                    int64_t diff = (int64_t)target - (int64_t)luaG_runerror;
+                    if (diff > -0x2000 && diff < 0x2000) {
+                        body_candidate = target;
+                        break;
+                    }
+                }
+            }
+        }
+
+        if (body_candidate) {
+            for (size_t pc = body_candidate; pc < body_candidate + 400 && pc < mem::text_end; pc += 4) {
+                uint32_t insn = *(uint32_t*)(mem::data + pc);
+                if (is_bl(insn)) {
+                    uintptr_t target = decode_bl(insn, pc);
+                    if (target >= mem::text_start && target < mem::text_end) {
+                        bool has_mov = false;
+                        for (int k = 0; k < 12; ++k) {
+                            size_t addr = target + k * 4;
+                            if (addr >= mem::text_end) break;
+                            uint32_t ins = *(uint32_t*)(mem::data + addr);
+                            if (ins == 0x52800300) { // mov w0, #0x18
+                                has_mov = true;
+                                break;
+                            }
+                        }
+                        if (has_mov) {
+                            luaD_throw = target;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // 3. Resolve luaC_step
+    if (lua_resume) {
+        uintptr_t luau_range_start = (lua_resume >= 0x200000) ? lua_resume - 0x200000 : mem::text_start;
+        uintptr_t luau_range_end = std::min(lua_resume + 0x200000, (uintptr_t)mem::text_end);
+
+        struct GCFunction {
+            uintptr_t addr;
+            std::vector<uintptr_t> calls;
+        };
+        std::vector<GCFunction> gc_funcs;
+
+        uintptr_t curr_func = 0;
+        bool has_gc_offsets = false;
+        std::vector<uintptr_t> bl_calls;
+
+        for (size_t pc = luau_range_start; pc < luau_range_end; pc += 4) {
+            uint32_t insn = *(uint32_t*)(mem::data + pc);
+            if (is_func_prologue_vm(insn)) {
+                if (curr_func != 0 && has_gc_offsets) {
+                    gc_funcs.push_back({curr_func, bl_calls});
+                }
+                curr_func = pc;
+                has_gc_offsets = false;
+                bl_calls.clear();
+            }
+
+            if (curr_func != 0) {
+                uint32_t op = insn & 0xffc00000;
+                if (op == 0xf9400000 || op == 0xf9000000) {
+                    uint32_t imm = ((insn >> 10) & 0xfff) << 3;
+                    if (imm >= 0x4400 && imm <= 0x4750) {
+                        has_gc_offsets = true;
+                    }
+                } else if (is_bl(insn)) {
+                    uintptr_t target = decode_bl(insn, pc);
+                    if (target >= mem::text_start && target < mem::text_end) {
+                        bl_calls.push_back(target);
+                    }
+                }
+            }
+        }
+        if (curr_func != 0 && has_gc_offsets) {
+            gc_funcs.push_back({curr_func, bl_calls});
+        }
+
+        std::vector<uintptr_t> unique_targets;
+        for (const auto& gf : gc_funcs) {
+            for (uintptr_t target : gf.calls) {
+                if (std::find(unique_targets.begin(), unique_targets.end(), target) == unique_targets.end()) {
+                    unique_targets.push_back(target);
+                }
+            }
+        }
+
+        for (uintptr_t target : unique_targets) {
+            size_t e = next_func_addr_vm(target);
+            bool target_has_gc = false;
+            for (size_t pc = target; pc < e; pc += 4) {
+                uint32_t insn = *(uint32_t*)(mem::data + pc);
+                uint32_t op = insn & 0xffc00000;
+                if (op == 0xf9400000 || op == 0xf9000000) {
+                    uint32_t imm = ((insn >> 10) & 0xfff) << 3;
+                    if (imm >= 0x4400 && imm <= 0x4750) {
+                        target_has_gc = true;
+                        break;
+                    }
+                }
+            }
+            if (target_has_gc) {
+                luaC_step = target;
+                break;
+            }
+        }
+    }
+
+    for (size_t i = 0; i < scans.size(); ++i) {
+        if (scans[i].name == "luau_execute") results[i] = luau_execute;
+        else if (scans[i].name == "luaD_throw") results[i] = luaD_throw;
+        else if (scans[i].name == "luaC_step") results[i] = luaC_step;
     }
 }
