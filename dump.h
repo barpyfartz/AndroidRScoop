@@ -15,4 +15,6 @@ struct scan {
 extern std::vector<scan> scans;
 
 uintptr_t process(const scan& s, uintptr_t addr);
+void resolve_tasks(const std::vector<scan>& scans, std::vector<uintptr_t>& results);
+void resolve_fields(const std::vector<scan>& scans, std::vector<uintptr_t>& results);
 void print_scan(const scan& s, uintptr_t result, std::string& last_section);
