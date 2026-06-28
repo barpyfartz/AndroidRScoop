@@ -2,17 +2,21 @@
 #include "mem.h"
 #include <algorithm>
 #include <unordered_map>
+#include <cstring>
+#include <map>
+#include <fstream>
+#include <iostream>
 
 std::vector<scan> scans = {
 	// standartenfuhrer patterns. add yours broski
     {"print", "Current identity is %d", "", 1, 0, false},
-    {"game_loaded", "onGameLoaded() SessionReporterState_GameLoaded placeId:%lld", "", 1, 0, false},
+    {"game_loaded", "onGameLoaded() SessionReporterState_GameLoaded placeId:%lld", "", 0, 0, false},
     {"on_game_leave", "onGameLeaveBegin() SessionReporterState_GameExitRequested placeId:%lld", "", 0, 0, false},
-    {"scriptstart", "", "fd 7b bd a9 fc 57 01 a9 f4 4f 02 a9 fd 03 00 91 ff 03 0a d1 ?? ?? ?? 90", 0, 0, false},
+    {"scriptstart", "", "fd 7b bd a9 f6 57 01 a9 f4 4f 02 a9 fd 03 00 91 f5 03 00 aa 1f 7c 00 a9 e0 03 01 aa f3 03 02 aa f4 03 01 aa", 0, 0, false},
     {"firetouchinterest", "new overlap in different world", "", 0, 0, false},
     {"jobstart", "[FLog::TaskSchedulerRun] JobStart %s", "", 0, 0, false},
     {"jobstop", "[FLog::TaskSchedulerRun] JobStop %s", "", 0, 0, false},
-    {"rbxspawn", "", "?? ?? ?? b0 ?? ?? ?? 91 09 05 80 52 ?? ?? ?? b0 ?? ?? ?? 91", 0, 0, false},
+    {"rbxspawn", "", "fd 7b bd a9 f6 57 01 a9 f4 4f 02 a9 fd 03 00 91 ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? df 08", 0, 0, false},
     {"taskdesynchronize", "task.desynchronize() should only be called from a script that is a descendant of an Actor", "", 0, 0, false},
     {"task_synchronize", "", "", 0, 0, false}, // thx pereoxide
     {"task_defer", "", "", 0, 0, false},
@@ -20,13 +24,17 @@ std::vector<scan> scans = {
     {"task_delay", "", "", 0, 0, false},
     {"task_wait", "", "", 0, 0, false},
     {"task_cancel", "", "", 0, 0, false},
-    {"rawscheduler", "HumanoidParallelManagerTaskQueue", "", 1, 0, false},
+    {"rawscheduler", "HumanoidParallelManagerTaskQueue", "", 0, 1, false},
     {"taskschedulerfps", "", "fd 7b bd a9 f5 0b 00 f9 f4 4f 02 a9 fd 03 00 91 ?? ?? ?? 90 ?? ?? ?? 91", 0, 0, false},
     {"lockviolationcrash", "LockViolationInstanceCrash", "", 0, 0, false},
     {"lockviolationscriptcrash", "LockViolationScriptCrash", "", 0, 0, false},
     {"luastepinternaloverride", "LuaStepIntervalMsOverrideEnabled", "", 0, 0, false},
     {"hashtablelookup", "Unable to query property {}. It is not scriptable", "", 0, 0, false},
-    {"getglobalstateforinstance", "[FLog::ScriptContextAdd] LoaderFacet::addScript -- %s", "", 3, 0, false},
+    {"getglobalstateforinstance", "", "fd 7b be a9 f4 4f 01 a9 fd 03 00 91 f3 03 02 aa f4 03 01 aa ?? ?? ?? ?? e1 03 14 aa e2 03 13 aa ?? ?? ?? ?? 08 24 40 29", 0, 0, false},
+    {"getluastate", "", "fd 7b be a9 f4 4f 01 a9 fd 03 00 91 f3 03 02 aa f4 03 01 aa ?? ?? ?? ?? e1 03 14 aa e2 03 13 aa ?? ?? ?? ?? 08 24 40 29", 0, 0, false},
+    {"ktable", "", "fd 7b bd a9 f6 57 01 a9 f4 4f 02 a9 fd 03 00 91 f3 03 00 aa ?? ?? ?? ?? 15 14 40 f9 f4 03 00 aa 53 01 00 b4", 0, 0, false},
+    {"scriptcontextresume", "", "ff 03 06 d1 e8 8b 00 fd fd 7b 12 a9 fc 6f 13 a9 fa 67 14 a9 f8 5f 15 a9 f6 57 16 a9 f4 4f 17 a9 fd 83 04 91 ?? ?? ?? b0 ?? ?? ?? b0 f6 03 00 aa ?? ?? ?? f9 f8 03 04 aa fa 03 03 2a", 0, 0, false},
+    {"robloxlogcrash", "", "", 0, 0, false},
     {"enableloadmodule", "EnableLoadModule", "", 0, 0, false},
     {"stdstringconstructor", "", "fd 7b bd a9 f6 57 01 a9 f4 4f 02 a9 fd 03 00 91 f3 03 00 aa", 0, 0, false},
     {"luauloadinternal", "", "?? ?? ?? b4 fd 7b bc a9 f8 5f 01 a9 f6 57 02 a9 f4 4f 03 a9 fd 03 00 91", 0, 0, false},
@@ -57,7 +65,7 @@ std::vector<scan> scans = {
     {"luaG_aritherror", "", "fd 7b bd a9 f6 57 01 a9 f4 4f 02 a9 fd 03 00 91 f5 03 03 2a f6 03 02 aa f3 03 00 aa ?? ?? ?? ?? f4 03 00 aa e0 03 13 aa e1 03 16 aa", 0, 0, false},
     {"luagetfield", "", "", 0, 0, false}, // d
     {"luasetfield", "", "", 0, 0, false},
-    {"luau_execute", "", "", 0, 0, false}, // skidded from my ios dumper
+    {"luau_execute", "", "", 0, 0, false},
     {"luaD_throw", "", "", 0, 0, false},
     {"luaC_step", "", "", 0, 0, false}
 };
@@ -153,9 +161,11 @@ static bool is_adrp(uint32_t insn) {
 static uint64_t decode_adrp(uint32_t insn, uint64_t pc) {
     uint64_t immhi = (insn >> 5) & 0x7FFFF;
     uint64_t immlo = (insn >> 29) & 3;
-    int64_t imm = (int64_t)((immhi << 2) | immlo) << 12;
-    if (imm & (1LL << 32)) imm |= ~((1LL << 33) - 1);
-    return (pc & ~0xFFFULL) + (uint64_t)imm;
+    int64_t imm = (int64_t)((immhi << 2) | immlo);
+    if (imm & 0x100000) {
+        imm |= ~0x1FFFFFULL;
+    }
+    return (pc & ~0xFFFULL) + (imm << 12);
 }
 
 static bool is_add_imm(uint32_t insn) {
@@ -392,49 +402,23 @@ void resolve_vm_offsets(const std::vector<scan>& scans, std::vector<uintptr_t>& 
     uintptr_t luau_execute = 0;
     uintptr_t luaD_throw = 0;
     uintptr_t luaC_step = 0;
-
-    // 1. Resolve luau_execute
     {
-        uintptr_t curr_func = 0;
-        int count = 0;
-        int max_count = 0;
-        for (size_t pc = mem::text_start; pc < mem::text_end; pc += 4) {
-            uint32_t insn = *(uint32_t*)(mem::data + pc);
-            if (is_func_prologue_vm(insn)) {
-                if (curr_func != 0 && count > max_count) {
-                    size_t size = (pc - curr_func) / 4;
-                    if (size > 1000) {
-                        luau_execute = curr_func;
-                        max_count = count;
-                    }
+        const uint8_t sig[] = { 0xe9, 0x23, 0xba, 0x6d, 0xfd, 0x7b, 0x01, 0xa9, 0xf9, 0x13, 0x00, 0xf9 }; // LuauExecute resolver, all resolvers below was lowk rechecked cuz half of offsets at old version were wrong
+        for (size_t pc = mem::text_start; pc <= mem::text_end - 0x30; pc += 4) {
+            if (memcmp(mem::data + pc, sig, sizeof(sig)) == 0) {
+                uint32_t insn = *(uint32_t*)(mem::data + pc + 0x24);
+                uint32_t op = insn & 0xFFC00000;
+                uint32_t imm12 = (insn >> 10) & 0xFFF;
+                if (op == 0x71000000 && imm12 == 201) {
+                    luau_execute = pc;
+                    break;
                 }
-                curr_func = pc;
-                count = 0;
-            }
-
-            if (curr_func != 0) {
-                if ((insn & 0xffc00c00) == 0xb8400400) {
-                    uint32_t rt = insn & 0x1f;
-                    uint32_t rn = (insn >> 5) & 0x1f;
-                    uint32_t imm9 = (insn >> 12) & 0x1ff;
-                    if (rt != 31 && rn != 31 && imm9 == 4) {
-                        count++;
-                    }
-                }
-            }
-        }
-        if (curr_func != 0 && count > max_count) {
-            size_t size = (mem::text_end - curr_func) / 4;
-            if (size > 1000) {
-                luau_execute = curr_func;
             }
         }
     }
-
-    // 2. Resolve luaD_throw
     if (luaG_runerror) {
         uintptr_t body_candidate = 0;
-        for (size_t pc = luaG_runerror; pc < luaG_runerror + 128 && pc < mem::text_end; pc += 4) {
+        for (size_t pc = luaG_runerror; pc < luaG_runerror + 128 && pc < mem::text_end; pc += 4) { // LuaDThrow
             uint32_t insn = *(uint32_t*)(mem::data + pc);
             if (is_bl(insn)) {
                 uintptr_t target = decode_bl(insn, pc);
@@ -459,7 +443,7 @@ void resolve_vm_offsets(const std::vector<scan>& scans, std::vector<uintptr_t>& 
                             size_t addr = target + k * 4;
                             if (addr >= mem::text_end) break;
                             uint32_t ins = *(uint32_t*)(mem::data + addr);
-                            if (ins == 0x52800300) { // mov w0, #0x18
+                            if (ins == 0x52800300) { // mov w0, #0x18!!11!!1
                                 has_mov = true;
                                 break;
                             }
@@ -473,10 +457,8 @@ void resolve_vm_offsets(const std::vector<scan>& scans, std::vector<uintptr_t>& 
             }
         }
     }
-
-    // 3. Resolve luaC_step
     if (lua_resume) {
-        uintptr_t luau_range_start = (lua_resume >= 0x200000) ? lua_resume - 0x200000 : mem::text_start;
+        uintptr_t luau_range_start = (lua_resume >= 0x200000) ? lua_resume - 0x200000 : mem::text_start; // LuaCStep
         uintptr_t luau_range_end = std::min(lua_resume + 0x200000, (uintptr_t)mem::text_end);
 
         struct GCFunction {
@@ -484,11 +466,9 @@ void resolve_vm_offsets(const std::vector<scan>& scans, std::vector<uintptr_t>& 
             std::vector<uintptr_t> calls;
         };
         std::vector<GCFunction> gc_funcs;
-
         uintptr_t curr_func = 0;
         bool has_gc_offsets = false;
         std::vector<uintptr_t> bl_calls;
-
         for (size_t pc = luau_range_start; pc < luau_range_end; pc += 4) {
             uint32_t insn = *(uint32_t*)(mem::data + pc);
             if (is_func_prologue_vm(insn)) {
@@ -499,7 +479,6 @@ void resolve_vm_offsets(const std::vector<scan>& scans, std::vector<uintptr_t>& 
                 has_gc_offsets = false;
                 bl_calls.clear();
             }
-
             if (curr_func != 0) {
                 uint32_t op = insn & 0xffc00000;
                 if (op == 0xf9400000 || op == 0xf9000000) {
@@ -548,10 +527,195 @@ void resolve_vm_offsets(const std::vector<scan>& scans, std::vector<uintptr_t>& 
             }
         }
     }
+    for (size_t i = 0; i < scans.size(); ++i) {
+        if (scans[i].name == "enableloadmodule") {
+            uintptr_t fflag_str = mem::find_str("EnableLoadModule");
+            if (fflag_str) {
+                auto xrefs = mem::find_xrefs(fflag_str);
+                if (!xrefs.empty()) {
+                    uintptr_t xref = xrefs[0];
+                    for (uintptr_t pc = xref - 4; pc >= xref - 40 && pc >= mem::text_start; pc -= 4) {
+                        uint32_t ins1 = *(uint32_t*)(mem::data + pc);
+                        if (is_adrp(ins1)) {
+                            uint32_t ins2 = *(uint32_t*)(mem::data + pc + 4);
+                            if (is_add_imm(ins2)) {
+                                uint64_t target = decode_adrp_add(ins1, ins2, pc);
+                                if (target >= mem::text_end) {
+                                    results[i] = target + 8;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    {
+        uintptr_t scriptcontextresume = 0;
+        for (size_t i = 0; i < scans.size(); ++i) {
+            if (scans[i].name == "scriptcontextresume") {
+                scriptcontextresume = results[i];
+                break;
+            }
+        }
+
+        uintptr_t robloxlogcrash = 0;
+        if (scriptcontextresume) {
+            std::vector<uintptr_t> matches;
+            const char* search_pattern = "InvalidAccess";
+            size_t pattern_len = strlen(search_pattern);
+            for (size_t pos = 0; pos <= mem::size - pattern_len; ++pos) {
+                if (memcmp(mem::data + pos, search_pattern, pattern_len) == 0) {
+                    matches.push_back(pos);
+                }
+            }
+
+            for (uintptr_t match : matches) {
+                auto xrefs = mem::find_xrefs(match);
+                for (uintptr_t xref : xrefs) {
+                    if (xref >= scriptcontextresume && xref < scriptcontextresume + 6000) {
+                        for (uintptr_t pc = xref + 4; pc < xref + 40 && pc < mem::text_end; pc += 4) {
+                            uint32_t ins = *(uint32_t*)(mem::data + pc);
+                            if (is_bl(ins)) {
+                                robloxlogcrash = decode_bl(ins, pc);
+                                break;
+                            }
+                        }
+                        if (robloxlogcrash) break;
+                    }
+                }
+                if (robloxlogcrash) break;
+            }
+        }
+
+        if (robloxlogcrash) {
+            for (size_t i = 0; i < scans.size(); ++i) {
+                if (scans[i].name == "robloxlogcrash") {
+                    results[i] = robloxlogcrash;
+                    break;
+                }
+            }
+        }
+    }
 
     for (size_t i = 0; i < scans.size(); ++i) {
         if (scans[i].name == "luau_execute") results[i] = luau_execute;
         else if (scans[i].name == "luaD_throw") results[i] = luaD_throw;
         else if (scans[i].name == "luaC_step") results[i] = luaC_step;
     }
+}
+
+bool extract_fflag_info(uintptr_t xref, std::string& out_name, uintptr_t& out_address) { // FFlag's, all should be correct ig
+    std::string prefix = "";
+    std::string name = "";
+    uintptr_t bss_ptr = 0;
+
+    const std::vector<std::string> known_prefixes = {
+        "FFlag", "FInt", "FString", "FLog",
+        "DFInt", "DFFlag", "DFString",
+        "SFInt", "SFFlag", "SFString"
+    };
+
+    for (int i = 1; i <= 40; ++i) {
+        uintptr_t pc = xref - i * 4;
+        if (pc < mem::text_start) break;
+
+        uint32_t ins1 = *(uint32_t*)(mem::data + pc);
+        if (is_adrp(ins1) && pc + 4 < xref) {
+            uint32_t ins2 = *(uint32_t*)(mem::data + pc + 4);
+            if (is_add_imm(ins2)) {
+                uint64_t target = decode_adrp_add(ins1, ins2, pc);
+                if (target >= mem::text_end) {
+                    if (!bss_ptr) bss_ptr = target;
+                } else if (target >= 0x1000) {
+                    const char* s = (const char*)(mem::data + target);
+                    if (isalpha(s[0])) {
+                        bool valid = true;
+                        int len = 0;
+                        while (s[len] && len < 200) {
+                            char c = s[len];
+                            if (!isalnum(c) && c != '_') {
+                                valid = false;
+                                break;
+                            }
+                            len++;
+                        }
+                        if (valid && len >= 2) {
+                            std::string str(s, len);
+                            bool is_prefix = false;
+                            for (const auto& kp : known_prefixes) {
+                                if (str == kp) {
+                                    prefix = kp;
+                                    is_prefix = true;
+                                    break;
+                                }
+                            }
+                            if (!is_prefix && name.empty()) {
+                                name = str;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    if (bss_ptr && !name.empty()) {
+        if (prefix.empty()) {
+            prefix = "FFlag";
+        }
+        out_name = prefix + name;
+        out_address = bss_ptr + 8;
+        return true;
+    }
+    return false;
+}
+
+uintptr_t find_register_variable_fn() {
+    uintptr_t fflag_str = mem::find_str("EnableLoadModule");
+    if (!fflag_str) return 0;
+    auto xrefs = mem::find_xrefs(fflag_str);
+    if (xrefs.empty()) return 0;
+    uintptr_t xref = xrefs[0];
+    for (uintptr_t pc = xref + 4; pc < xref + 40 && pc < mem::text_end; pc += 4) {
+        uint32_t ins = *(uint32_t*)(mem::data + pc);
+        if (is_bl(ins)) {
+            return decode_bl(ins, pc);
+        }
+    }
+    return 0;
+}
+
+void dump_all_fflags(const std::string& output_path) {
+    uintptr_t reg_fn = find_register_variable_fn();
+    if (!reg_fn) return;
+
+    std::map<std::string, uintptr_t> fflags;
+
+    for (size_t pc = mem::text_start; pc < mem::text_end - 4; pc += 4) {
+        uint32_t ins = *(uint32_t*)(mem::data + pc);
+        if (is_bl(ins)) {
+            if (decode_bl(ins, pc) == reg_fn) {
+                std::string name;
+                uintptr_t addr = 0;
+                if (extract_fflag_info(pc, name, addr)) {
+                    fflags[name] = addr;
+                }
+            }
+        }
+    }
+
+    std::ofstream out(output_path);
+    if (!out) return;
+
+    out << "#pragma once\n";
+    out << "// dumped with rscoop!11!1\n";
+    out << "#include <cstdint>\n\n";
+    out << "namespace FFlags {\n";
+    for (const auto& pair : fflags) {
+        out << "    constexpr uintptr_t " << pair.first << " = 0x" 
+            << std::hex << std::uppercase << pair.second << ";\n";
+    }
+    out << "}\n";
 }
