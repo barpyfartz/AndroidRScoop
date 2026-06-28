@@ -1,0 +1,62 @@
+#pragma once
+#include <cstdint>
+
+namespace Offsets {
+    constexpr uintptr_t Print = 0x3A987B0;
+    constexpr uintptr_t GameLoaded = 0x2210E4C;
+    constexpr uintptr_t OnGameLeave = 0x26CABB8;
+    constexpr uintptr_t Scriptstart = 0x394A818;
+    constexpr uintptr_t Firetouchinterest = 0x45A668C;
+    constexpr uintptr_t Jobstart = 0x1FDB078;
+    constexpr uintptr_t Jobstop = 0x1FDB2B8;
+    constexpr uintptr_t RobloxSpawn = 0x1C69A24;
+    constexpr uintptr_t Taskdesynchronize = 0x3940D00;
+    constexpr uintptr_t TaskSynchronize = 0x3940AF4;
+    constexpr uintptr_t TaskDefer = 0x21D7B38;
+    constexpr uintptr_t TaskSpawn = 0x21EF968;
+    constexpr uintptr_t TaskDelay = 0x220CD38;
+    constexpr uintptr_t TaskWait = 0x2245700;
+    constexpr uintptr_t TaskCancel = 0x3940F0C;
+    constexpr uintptr_t Rawscheduler = 0x2087980;
+    constexpr uintptr_t Taskschedulerfps = 0x1C818E0;
+    constexpr uintptr_t Lockviolationcrash = 0x1F35ED8;
+    constexpr uintptr_t Lockviolationscriptcrash = 0x1C84C58;
+    constexpr uintptr_t Luastepinternaloverride = 0x1C8724C;
+    constexpr uintptr_t Hashtablelookup = 0x3860C08;
+    constexpr uintptr_t GetGlobalStateForInstance = 0x21B9EA0;
+    constexpr uintptr_t Getluastate = 0x21B9EA0;
+    constexpr uintptr_t KTable = 0x21BE7D8;
+    constexpr uintptr_t Scriptcontextresume = 0x21BD52C;
+    constexpr uintptr_t Robloxlogcrash = 0x5E51230;
+    constexpr uintptr_t Stdstringconstructor = 0x1C57BF8;
+    constexpr uintptr_t Luauloadinternal = 0x1C53600;
+    constexpr uintptr_t Luauloadcorescripts = 0x1DF4E48;
+    constexpr uintptr_t Validateandsetupcaps = 0x1C701F8;
+    constexpr uintptr_t LuaG_RunError = 0x5AC3428;
+    constexpr uintptr_t LuaResume = 0x5AC446C;
+    constexpr uintptr_t LuaResumeFromSuspended = 0x5AC43D0;
+    constexpr uintptr_t LuaHSetTable = 0x21A85E8;
+    constexpr uintptr_t StackOverflow = 0x21D9C78;
+    constexpr uintptr_t InvalidKeyNext = 0x21CF798;
+    constexpr uintptr_t NewIndex = 0x1F06C80;
+    constexpr uintptr_t NamecallHandler = 0x21A9C64;
+    constexpr uintptr_t InvokeServer = 0x41CFCF4;
+    constexpr uintptr_t FireServer = 0x3ED2694;
+    constexpr uintptr_t FireAllClients = 0x3ED2DB4;
+    constexpr uintptr_t InvokeClient = 0x41D0BBC;
+    constexpr uintptr_t LuauLoad = 0x5ADA0C0;
+    constexpr uintptr_t LuauYield = 0x21EFB88;
+    constexpr uintptr_t ResumeWaitingScripts = 0x395CC94;
+    constexpr uintptr_t GetScheduler = 0x1C55F4C;
+    constexpr uintptr_t SetThreadIdentity = 0x21BCA54;
+    constexpr uintptr_t NewProxy = 0x5ABCF04;
+    constexpr uintptr_t LoadString = 0x3983C10;
+    constexpr uintptr_t GetFenv = 0x39842F4;
+    constexpr uintptr_t SetFenv = 0x398448C;
+    constexpr uintptr_t LuaG_ArithError = 0x5AC3340;
+    constexpr uintptr_t LuaGetField = 0x5ABAC1C;
+    constexpr uintptr_t LuaSetField = 0x21A80C0;
+    constexpr uintptr_t Luau_Execute = 0x3957014;
+    constexpr uintptr_t LuaD_Throw = 0x5AC3F44;
+    constexpr uintptr_t LuaC_Step = 0x21ADDA4;
+}
