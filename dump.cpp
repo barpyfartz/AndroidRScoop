@@ -8,7 +8,7 @@
 #include <iostream>
 
 std::vector<scan> scans = {
-	// standartenfuhrer patterns. add yours broski
+    // standartenfuhrer patterns. add yours broski
     {"print", "Current identity is %d", "", 1, 0, false},
     {"game_loaded", "onGameLoaded() SessionReporterState_GameLoaded placeId:%lld", "", 0, 0, false},
     {"on_game_leave", "onGameLeaveBegin() SessionReporterState_GameExitRequested placeId:%lld", "", 0, 0, false},
@@ -24,7 +24,8 @@ std::vector<scan> scans = {
     {"task_delay", "", "", 0, 0, false},
     {"task_wait", "", "", 0, 0, false},
     {"task_cancel", "", "", 0, 0, false},
-    {"rawscheduler", "HumanoidParallelManagerTaskQueue", "", 0, 1, false},
+    {"taskschedulerconstructor", "HumanoidParallelManagerTaskQueue", "", 0, 0, false},
+    {"rawscheduler", "HumanoidParallelManagerTaskQueue", "", 0, 1, false}, // caller
     {"taskschedulerfps", "", "fd 7b bd a9 f5 0b 00 f9 f4 4f 02 a9 fd 03 00 91 ?? ?? ?? 90 ?? ?? ?? 91", 0, 0, false},
     {"lockviolationcrash", "LockViolationInstanceCrash", "", 0, 0, false},
     {"lockviolationscriptcrash", "LockViolationScriptCrash", "", 0, 0, false},
@@ -34,7 +35,7 @@ std::vector<scan> scans = {
     {"getluastate", "", "fd 7b be a9 f4 4f 01 a9 fd 03 00 91 f3 03 02 aa f4 03 01 aa ?? ?? ?? ?? e1 03 14 aa e2 03 13 aa ?? ?? ?? ?? 08 24 40 29", 0, 0, false},
     {"ktable", "", "fd 7b bd a9 f6 57 01 a9 f4 4f 02 a9 fd 03 00 91 f3 03 00 aa ?? ?? ?? ?? 15 14 40 f9 f4 03 00 aa 53 01 00 b4", 0, 0, false},
     {"scriptcontextresume", "", "ff 03 06 d1 e8 8b 00 fd fd 7b 12 a9 fc 6f 13 a9 fa 67 14 a9 f8 5f 15 a9 f6 57 16 a9 f4 4f 17 a9 fd 83 04 91 ?? ?? ?? b0 ?? ?? ?? b0 f6 03 00 aa ?? ?? ?? f9 f8 03 04 aa fa 03 03 2a", 0, 0, false},
-    {"robloxlogcrash", "", "", 0, 0, false},
+    // {"robloxlogcrash", "", "", 0, 0, false},
     {"enableloadmodule", "EnableLoadModule", "", 0, 0, false},
     {"stdstringconstructor", "", "fd 7b bd a9 f6 57 01 a9 f4 4f 02 a9 fd 03 00 91 f3 03 00 aa", 0, 0, false},
     {"luauloadinternal", "", "?? ?? ?? b4 fd 7b bc a9 f8 5f 01 a9 f6 57 02 a9 f4 4f 03 a9 fd 03 00 91", 0, 0, false},
@@ -47,27 +48,39 @@ std::vector<scan> scans = {
     {"stackoverflow",           "stack overflow (%s)",                               "", 0, 0, false},
     {"invalidkeynext",          "invalid key to 'next'",                             "", 0, 0, false},
     {"newindex",                "__newindex",                                         "", 0, 0, false},
-    {"namecallhandler",         "__namecall",                                        "", 0, 0, false},
+    {"namecallhandler",          "__namecall",                                        "", 0, 0, false},
     {"invokeserver",            "InvokeServer can only be called from the client",   "", 0, 0, false},
     {"fireserver",              "FireServer can only be called from the client",     "", 0, 0, false},
     {"fireallclients",          "FireAllClients can only be called from the server", "", 0, 0, false},
     {"invokeclient",            "InvokeClient can only be called from the server",   "", 0, 0, false},
     {"luauload",               "%s: bytecode version mismatch (expected [%d..%d], got %d)", "", 0, 0, false},
     {"luauyield",              "attempt to yield across metamethod/C-call boundary", "", 0, 0, false},
-    {"resumewaitingscripts",    "WaitingHybridScriptsJob",                           "", 1, 0, false},
+    {"resumewaitingscripts",    "WaitingHybridScriptsJob",                            "", 1, 0, false},
     {"getscheduler",            "", "ff c3 01 d1 fd 7b 04 a9 f5 2b 00 f9 f4 4f 06 a9 fd 03 01 91 ?? ?? ?? ?? ?? ?? ?? ?? a8 02 40 f9 a8 83 1f f8 ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? f3 03 00 aa 08 fd df 08 ?? ?? ?? ?? e0 03 13 aa", 0, 0, false},
-    {"setthreadidentity",       "", "fd 7b bd a9 f6 57 01 a9 f4 4f 02 a9 fd 03 00 91 f3 03 02 aa f4 03 01 2a 3f 04 00 71 f5 03 00 aa", 0, 0, false},
-    {"getthreadidentity",       "", "08 ?? 40 f9 09 ?? 40 f9 08 01 09 cb 00 fd 44 d3 c0 03 5f d6", 0, 0, false},
     {"newproxy",                "", "fd 7b be a9 f3 0b 00 f9 fd 03 00 91 21 00 80 52 f3 03 00 aa ?? ?? ?? ?? 08 78 1f 12 1f 19 00 71", 0, 0, false},
     {"loadstring",           "loadstring() is not available",                               "", 0, 0, false},
     {"getfenv", "", "fd 7b be a9 f3 0b 00 f9 fd 03 00 91 f3 03 00 aa ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? 01 00 90 52 ?? ?? ?? ?? e0 03 13 aa 21 00 80 52", 0, 0, false},
     {"setfenv", "", "fd 7b be a9 f3 0b 00 f9 fd 03 00 91 f3 03 00 aa ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? 01 00 90 52 ?? ?? ?? ?? e0 03 13 aa 41 00 80 52", 0, 0, false},
     {"luaG_aritherror", "", "fd 7b bd a9 f6 57 01 a9 f4 4f 02 a9 fd 03 00 91 f5 03 03 2a f6 03 02 aa f3 03 00 aa ?? ?? ?? ?? f4 03 00 aa e0 03 13 aa e1 03 16 aa", 0, 0, false},
-    {"luagetfield", "", "", 0, 0, false}, // d
+    {"luagetfield", "", "", 0, 0, false}, 
     {"luasetfield", "", "", 0, 0, false},
     {"luau_execute", "", "", 0, 0, false},
     {"luaD_throw", "", "", 0, 0, false},
-    {"luaC_step", "", "", 0, 0, false}
+    {"luaC_step", "", "", 0, 0, false},
+    {"luaE_newthread", "", "", 0, 0, false},
+    {"lua_newthread", "", "", 0, 0, false},
+    {"getcapabilities", "", "", 0, 0, false},
+    {"taskscheduler_mutex", "", "", 0, 0, true},
+    {"taskscheduler_queue", "", "", 0, 0, true},
+    {"taskscheduler_workers", "", "", 0, 0, true},
+    {"telemetry_buffer", "", "", 0, 0, true},
+    {"telemetry_size", "", "", 0, 0, true},
+    {"lua_index2addr", "", "", 0, 0, false},
+    {"lua_state_top", "", "", 0, 0, true},
+    {"lua_state_base", "", "", 0, 0, true},
+    {"lua_state_global_state", "", "", 0, 0, true},
+    {"luas_newlstr", "", "", 0, 0, false},
+    {"lua_pushlstring", "", "", 0, 0, false},
 };
 
 static inline bool is_bl(uint32_t insn) {
@@ -389,224 +402,7 @@ static size_t next_func_addr_vm(size_t addr) {
     return mem::text_end;
 }
 
-void resolve_vm_offsets(const std::vector<scan>& scans, std::vector<uintptr_t>& results) {
-    if (!mem::is_arm64) return;
-
-    uintptr_t lua_resume = 0;
-    uintptr_t luaG_runerror = 0;
-    for (size_t i = 0; i < scans.size(); ++i) {
-        if (scans[i].name == "luaresume") lua_resume = results[i];
-        else if (scans[i].name == "luaG_runerror") luaG_runerror = results[i];
-    }
-
-    uintptr_t luau_execute = 0;
-    uintptr_t luaD_throw = 0;
-    uintptr_t luaC_step = 0;
-    {
-        const uint8_t sig[] = { 0xe9, 0x23, 0xba, 0x6d, 0xfd, 0x7b, 0x01, 0xa9, 0xf9, 0x13, 0x00, 0xf9 }; // LuauExecute resolver, all resolvers below was lowk rechecked cuz half of offsets at old version were wrong
-        for (size_t pc = mem::text_start; pc <= mem::text_end - 0x30; pc += 4) {
-            if (memcmp(mem::data + pc, sig, sizeof(sig)) == 0) {
-                uint32_t insn = *(uint32_t*)(mem::data + pc + 0x24);
-                uint32_t op = insn & 0xFFC00000;
-                uint32_t imm12 = (insn >> 10) & 0xFFF;
-                if (op == 0x71000000 && imm12 == 201) {
-                    luau_execute = pc;
-                    break;
-                }
-            }
-        }
-    }
-    if (luaG_runerror) {
-        uintptr_t body_candidate = 0;
-        for (size_t pc = luaG_runerror; pc < luaG_runerror + 128 && pc < mem::text_end; pc += 4) { // LuaDThrow
-            uint32_t insn = *(uint32_t*)(mem::data + pc);
-            if (is_bl(insn)) {
-                uintptr_t target = decode_bl(insn, pc);
-                if (target >= mem::text_start && target < mem::text_end) {
-                    int64_t diff = (int64_t)target - (int64_t)luaG_runerror;
-                    if (diff > -0x2000 && diff < 0x2000) {
-                        body_candidate = target;
-                        break;
-                    }
-                }
-            }
-        }
-
-        if (body_candidate) {
-            for (size_t pc = body_candidate; pc < body_candidate + 400 && pc < mem::text_end; pc += 4) {
-                uint32_t insn = *(uint32_t*)(mem::data + pc);
-                if (is_bl(insn)) {
-                    uintptr_t target = decode_bl(insn, pc);
-                    if (target >= mem::text_start && target < mem::text_end) {
-                        bool has_mov = false;
-                        for (int k = 0; k < 12; ++k) {
-                            size_t addr = target + k * 4;
-                            if (addr >= mem::text_end) break;
-                            uint32_t ins = *(uint32_t*)(mem::data + addr);
-                            if (ins == 0x52800300) { // mov w0, #0x18!!11!!1
-                                has_mov = true;
-                                break;
-                            }
-                        }
-                        if (has_mov) {
-                            luaD_throw = target;
-                            break;
-                        }
-                    }
-                }
-            }
-        }
-    }
-    if (lua_resume) {
-        uintptr_t luau_range_start = (lua_resume >= 0x200000) ? lua_resume - 0x200000 : mem::text_start; // LuaCStep
-        uintptr_t luau_range_end = std::min(lua_resume + 0x200000, (uintptr_t)mem::text_end);
-
-        struct GCFunction {
-            uintptr_t addr;
-            std::vector<uintptr_t> calls;
-        };
-        std::vector<GCFunction> gc_funcs;
-        uintptr_t curr_func = 0;
-        bool has_gc_offsets = false;
-        std::vector<uintptr_t> bl_calls;
-        for (size_t pc = luau_range_start; pc < luau_range_end; pc += 4) {
-            uint32_t insn = *(uint32_t*)(mem::data + pc);
-            if (is_func_prologue_vm(insn)) {
-                if (curr_func != 0 && has_gc_offsets) {
-                    gc_funcs.push_back({curr_func, bl_calls});
-                }
-                curr_func = pc;
-                has_gc_offsets = false;
-                bl_calls.clear();
-            }
-            if (curr_func != 0) {
-                uint32_t op = insn & 0xffc00000;
-                if (op == 0xf9400000 || op == 0xf9000000) {
-                    uint32_t imm = ((insn >> 10) & 0xfff) << 3;
-                    if (imm >= 0x4400 && imm <= 0x4750) {
-                        has_gc_offsets = true;
-                    }
-                } else if (is_bl(insn)) {
-                    uintptr_t target = decode_bl(insn, pc);
-                    if (target >= mem::text_start && target < mem::text_end) {
-                        bl_calls.push_back(target);
-                    }
-                }
-            }
-        }
-        if (curr_func != 0 && has_gc_offsets) {
-            gc_funcs.push_back({curr_func, bl_calls});
-        }
-
-        std::vector<uintptr_t> unique_targets;
-        for (const auto& gf : gc_funcs) {
-            for (uintptr_t target : gf.calls) {
-                if (std::find(unique_targets.begin(), unique_targets.end(), target) == unique_targets.end()) {
-                    unique_targets.push_back(target);
-                }
-            }
-        }
-
-        for (uintptr_t target : unique_targets) {
-            size_t e = next_func_addr_vm(target);
-            bool target_has_gc = false;
-            for (size_t pc = target; pc < e; pc += 4) {
-                uint32_t insn = *(uint32_t*)(mem::data + pc);
-                uint32_t op = insn & 0xffc00000;
-                if (op == 0xf9400000 || op == 0xf9000000) {
-                    uint32_t imm = ((insn >> 10) & 0xfff) << 3;
-                    if (imm >= 0x4400 && imm <= 0x4750) {
-                        target_has_gc = true;
-                        break;
-                    }
-                }
-            }
-            if (target_has_gc) {
-                luaC_step = target;
-                break;
-            }
-        }
-    }
-    for (size_t i = 0; i < scans.size(); ++i) {
-        if (scans[i].name == "enableloadmodule") {
-            uintptr_t fflag_str = mem::find_str("EnableLoadModule");
-            if (fflag_str) {
-                auto xrefs = mem::find_xrefs(fflag_str);
-                if (!xrefs.empty()) {
-                    uintptr_t xref = xrefs[0];
-                    for (uintptr_t pc = xref - 4; pc >= xref - 40 && pc >= mem::text_start; pc -= 4) {
-                        uint32_t ins1 = *(uint32_t*)(mem::data + pc);
-                        if (is_adrp(ins1)) {
-                            uint32_t ins2 = *(uint32_t*)(mem::data + pc + 4);
-                            if (is_add_imm(ins2)) {
-                                uint64_t target = decode_adrp_add(ins1, ins2, pc);
-                                if (target >= mem::text_end) {
-                                    results[i] = target + 8;
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-    {
-        uintptr_t scriptcontextresume = 0;
-        for (size_t i = 0; i < scans.size(); ++i) {
-            if (scans[i].name == "scriptcontextresume") {
-                scriptcontextresume = results[i];
-                break;
-            }
-        }
-
-        uintptr_t robloxlogcrash = 0;
-        if (scriptcontextresume) {
-            std::vector<uintptr_t> matches;
-            const char* search_pattern = "InvalidAccess";
-            size_t pattern_len = strlen(search_pattern);
-            for (size_t pos = 0; pos <= mem::size - pattern_len; ++pos) {
-                if (memcmp(mem::data + pos, search_pattern, pattern_len) == 0) {
-                    matches.push_back(pos);
-                }
-            }
-
-            for (uintptr_t match : matches) {
-                auto xrefs = mem::find_xrefs(match);
-                for (uintptr_t xref : xrefs) {
-                    if (xref >= scriptcontextresume && xref < scriptcontextresume + 6000) {
-                        for (uintptr_t pc = xref + 4; pc < xref + 40 && pc < mem::text_end; pc += 4) {
-                            uint32_t ins = *(uint32_t*)(mem::data + pc);
-                            if (is_bl(ins)) {
-                                robloxlogcrash = decode_bl(ins, pc);
-                                break;
-                            }
-                        }
-                        if (robloxlogcrash) break;
-                    }
-                }
-                if (robloxlogcrash) break;
-            }
-        }
-
-        if (robloxlogcrash) {
-            for (size_t i = 0; i < scans.size(); ++i) {
-                if (scans[i].name == "robloxlogcrash") {
-                    results[i] = robloxlogcrash;
-                    break;
-                }
-            }
-        }
-    }
-
-    for (size_t i = 0; i < scans.size(); ++i) {
-        if (scans[i].name == "luau_execute") results[i] = luau_execute;
-        else if (scans[i].name == "luaD_throw") results[i] = luaD_throw;
-        else if (scans[i].name == "luaC_step") results[i] = luaC_step;
-    }
-}
-
-bool extract_fflag_info(uintptr_t xref, std::string& out_name, uintptr_t& out_address) { // FFlag's, all should be correct ig
+bool extract_fflag_info(uintptr_t xref, std::string& out_name, uintptr_t& out_address) {
     std::string prefix = "";
     std::string name = "";
     uintptr_t bss_ptr = 0;
@@ -708,9 +504,8 @@ void dump_all_fflags(const std::string& output_path) {
 
     std::ofstream out(output_path);
     if (!out) return;
-
-    out << "#pragma once\n";
     out << "// dumped with rscoop!11!1\n";
+    out << "#pragma once\n";
     out << "#include <cstdint>\n\n";
     out << "namespace FFlags {\n";
     for (const auto& pair : fflags) {
@@ -718,4 +513,665 @@ void dump_all_fflags(const std::string& output_path) {
             << std::hex << std::uppercase << pair.second << ";\n";
     }
     out << "}\n";
+}
+
+void resolve_tsconstrctor(const std::vector<scan>& scans, std::vector<uintptr_t>& results) {
+    if (!mem::is_arm64) return;
+    size_t caller_idx = -1;
+    size_t ptr_idx = -1;
+    
+    for (size_t i = 0; i < scans.size(); ++i) {
+        if (scans[i].name == "rawscheduler") caller_idx = i;
+        if (scans[i].name == "taskschedulerconstructor") ptr_idx = i;
+    }
+    if (caller_idx == -1 || ptr_idx == -1 || !results[caller_idx]) return;
+    uintptr_t caller_addr = results[caller_idx];
+    uintptr_t cand_end = next_func_addr_vm(caller_addr);
+    std::vector<uintptr_t> bl_targets;
+    std::vector<uintptr_t> bl_pcs;
+    for (uintptr_t pc = caller_addr; pc < cand_end; pc += 4) {
+        uint32_t insn = *(uint32_t*)(mem::data + pc);
+        if (is_bl(insn)) {
+            uintptr_t target = decode_bl(insn, pc);
+            if (target < mem::text_start || target >= mem::text_end) continue;
+            
+            bl_targets.push_back(target);
+            bl_pcs.push_back(pc);
+        }
+    }
+    uintptr_t rawscheduler_addr = 0;
+    if (bl_targets.size() >= 3) {
+        for (size_t i = 2; i < bl_targets.size(); ++i) {
+            uintptr_t current_target = bl_targets[i];
+            uintptr_t sub_end = next_func_addr_vm(current_target);
+            size_t sub_size = sub_end - current_target;
+            if (sub_size > 0 && sub_size < 0x35 && bl_pcs[i] + 150 >= cand_end) {
+                uintptr_t prev_target = bl_targets[i - 1];
+                uintptr_t prev_sub_end = next_func_addr_vm(prev_target);
+                
+                if ((prev_sub_end - prev_target) > 0x40) {
+                    rawscheduler_addr = prev_target;
+                    break;
+                }
+            }
+        }
+    }
+    if (!rawscheduler_addr && bl_targets.size() >= 3) {
+        int large_bl_count = 0;
+        for (int i = (int)bl_targets.size() - 1; i >= 0; i--) {
+            uintptr_t target = bl_targets[i];
+            uintptr_t sub_end = next_func_addr_vm(target);
+            size_t size = sub_end - target;
+            
+            if (size > 0x40 && size < 0x600) {
+                large_bl_count++;
+                if (large_bl_count == 2) {
+                    rawscheduler_addr = target;
+                    break;
+                }
+            }
+        }
+    }
+    
+    if (rawscheduler_addr) {
+        results[ptr_idx] = rawscheduler_addr;
+    }
+}
+
+void resolvejobevents(const std::vector<scan>& scans, std::vector<uintptr_t>& results) {
+    if (!mem::is_arm64) return; 
+    size_t start_idx = -1;
+    size_t stop_idx = -1;
+    for (size_t i = 0; i < scans.size(); ++i) {
+        if (scans[i].name == "jobstart") start_idx = i;
+        if (scans[i].name == "jobstop") stop_idx = i;
+    }
+    uintptr_t start_str = mem::find_str("[FLog::TaskSchedulerRun] JobStart %s");
+    if (start_str && start_idx != -1) {
+        auto xrefs = mem::find_xrefs(start_str);
+        for (uintptr_t xref : xrefs) {
+            uintptr_t func = mem::find_func(xref);
+            uintptr_t f_end = next_func_addr_vm(func);
+            if ((f_end - func) > 0x60) { 
+                results[start_idx] = func;
+                break;
+            }
+        }
+    }
+    if (results[start_idx] && stop_idx != -1) {
+        uintptr_t search_start = results[start_idx];
+        uintptr_t search_end = search_start + 0x1000;
+        uintptr_t current_func = search_start;
+        while (current_func < search_end && current_func < mem::text_end) {
+            uintptr_t func_end = next_func_addr_vm(current_func);
+            bool has_mutex_offset = false;
+            bool has_cond_offset = false;
+            for (uintptr_t pc = current_func; pc < func_end; pc += 4) {
+                uint32_t insn = *(uint32_t*)(mem::data + pc);
+                if ((insn & 0xFFC003E0) == 0x91000260) { 
+                    uint32_t imm12 = (insn >> 10) & 0xFFF;
+                    if (imm12 == 0x98) has_mutex_offset = true;
+                    if (imm12 == 0x70) has_cond_offset = true;
+                }
+                if ((insn & 0xFFC00000) == 0x91000000) {
+                    uint32_t imm12 = (insn >> 10) & 0xFFF;
+                    uint32_t rd = insn & 0x1F;
+                    if (rd == 0) {
+                        if (imm12 == 0x98) has_mutex_offset = true;
+                        if (imm12 == 0x70) has_cond_offset = true;
+                    }
+                }
+            }
+            if (has_mutex_offset && has_cond_offset) {
+                results[stop_idx] = current_func;
+                break;
+            }
+            
+            current_func = func_end;
+        }
+    }
+    if (!results[stop_idx] || results[stop_idx] == results[start_idx] || results[stop_idx] < 0x1FDB300) {
+        results[stop_idx] = results[start_idx] + 0x5E0;
+    }
+}
+
+void resolve_tsdecoffsets(const std::vector<scan>& scans, std::vector<uintptr_t>& results) {
+    if (!mem::is_arm64) return;
+    uintptr_t constructor_addr = 0;
+    for (size_t i = 0; i < scans.size(); ++i) {
+        if (scans[i].name == "taskschedulerconstructor") {
+            constructor_addr = results[i];
+            break;
+        }
+    }
+    if (!constructor_addr) return;
+    uintptr_t cand_end = next_func_addr_vm(constructor_addr);
+    uintptr_t mutex_offset = 0;
+    uintptr_t queue_offset = 0;
+    uintptr_t workers_offset = 0;
+    bool found_first_mutex = false;
+    for (uintptr_t pc = constructor_addr; pc < cand_end; pc += 4) {
+        uint32_t insn = *(uint32_t*)(mem::data + pc);
+        if (!found_first_mutex && (insn & 0xFFC00000) == 0x91000000) {
+            uint32_t rd = insn & 0x1F;
+            uint32_t rn = (insn >> 5) & 0x1F;
+            if (rd == 0 && rn == 19) {
+                mutex_offset = (insn >> 10) & 0xFFF;
+                found_first_mutex = true;
+            }
+        }
+        if (is_bl(insn)) {
+            uintptr_t target = decode_bl(insn, pc);
+            uint32_t prev_insn = *(uint32_t*)(mem::data + pc - 4);
+            if (prev_insn == 0x52800101) { 
+                uint32_t next_insn = *(uint32_t*)(mem::data + pc + 4);
+                if ((next_insn & 0xFFC00000) == 0xF9000000) {
+                    uint32_t rt = next_insn & 0x1F;
+                    uint32_t rn = (next_insn >> 5) & 0x1F;
+                    if (rt == 0 && rn == 19) {
+                        queue_offset = ((next_insn >> 10) & 0xFFF) << 3;
+                    }
+                }
+            }
+            uintptr_t target_end = next_func_addr_vm(target);
+            if ((target_end - target) < 0x50) {
+                for (uintptr_t post_pc = pc + 4; post_pc <= pc + 40; post_pc += 4) {
+                    uint32_t post_insn = *(uint32_t*)(mem::data + post_pc);
+                    if ((post_insn & 0xFFC00000) == 0xF9000000) {
+                        uint32_t rn = (post_insn >> 5) & 0x1F;
+                        if (rn == 19) {
+                            uint32_t imm12 = ((post_insn >> 10) & 0xFFF) << 3;
+                            if (imm12 >= 0x140 && imm12 <= 0x180) {
+                                workers_offset = imm12;
+                                break;
+                            }
+                        }
+                    }
+                    if ((post_insn & 0xFFC00000) == 0x29000000) {
+                        uint32_t rn = (post_insn >> 5) & 0x1F;
+                        if (rn == 19) {
+                            int64_t imm7 = (post_insn >> 15) & 0x7F;
+                            if (imm7 & 0x40) imm7 -= 0x80;
+                            uint32_t imm = imm7 << 3;
+                            if (imm >= 0x140 && imm <= 0x180) {
+                                workers_offset = imm;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    for (size_t i = 0; i < scans.size(); ++i) {
+        if (scans[i].name == "taskscheduler_mutex") results[i] = mutex_offset;
+        else if (scans[i].name == "taskscheduler_queue") results[i] = queue_offset;
+        else if (scans[i].name == "taskscheduler_workers") results[i] = workers_offset;
+    }
+}
+
+void resolve_network_telemetry(const std::vector<scan>& scans, std::vector<uintptr_t>& results) {
+    if (!mem::is_arm64) return;
+
+    uintptr_t telemetry_func = 0;
+    size_t begin = (mem::text_start + 3) & ~3ULL;
+    size_t end = mem::text_end - 4;
+    for (size_t i = begin; i < end; i += 4) {
+        uint32_t insn = *(uint32_t*)(mem::data + i);
+        if ((insn & 0xFFFFF0BF) == 0xD50330BF) {
+            uintptr_t parent = mem::find_func(i);
+            if (parent) {
+                size_t f_end = next_func_addr_vm(parent);
+                int bl_count = 0;
+                for (size_t pc = parent; pc < f_end; pc += 4) {
+                    if (is_bl(*(uint32_t*)(mem::data + pc))) {
+                        bl_count++;
+                    }
+                }
+                if (bl_count >= 3) {
+                    telemetry_func = parent;
+                    break;
+                }
+            }
+        }
+    }
+
+    if (!telemetry_func) return;
+    uintptr_t f_end = next_func_addr_vm(telemetry_func);
+    uintptr_t vector_offset = 0;
+    uintptr_t size_offset = 0;
+
+    for (uintptr_t pc = telemetry_func; pc < f_end; pc += 4) {
+        uint32_t insn = *(uint32_t*)(mem::data + pc);
+        if ((insn & 0xFFC00000) == 0xB9400000 || (insn & 0xFFC00000) == 0xF9400000 || (insn & 0xFFC00000) == 0x91000000) {
+            uint32_t imm = (insn >> 10) & 0xFFF;
+            uint32_t real_offset = ((insn & 0xFFC00000) == 0xF9400000) ? (imm << 3) : imm;
+            if (real_offset >= 0x170 && real_offset <= 0x190) {
+                vector_offset = real_offset;
+            }
+            if (real_offset >= 0x1B0 && real_offset <= 0x1D0) {
+                size_offset = real_offset;
+            }
+        }
+    }
+    if (!vector_offset) vector_offset = 0x180;
+    if (!size_offset) size_offset = 0x1C0;
+    for (size_t i = 0; i < scans.size(); ++i) {
+        if (scans[i].name == "telemetry_buffer") results[i] = vector_offset;
+        else if (scans[i].name == "telemetry_size") results[i] = size_offset;
+    }
+}
+
+void resolve_lua_index2addr(const std::vector<scan>& scans, std::vector<uintptr_t>& results) {
+    if (!mem::is_arm64) return;
+
+    uintptr_t index2addr_addr = 0;
+    size_t begin = (mem::text_start + 3) & ~3ULL;
+    size_t end = mem::text_end - 4;
+    for (size_t i = begin; i < end - 4; i += 4) {
+        uint32_t insn1 = *(uint32_t*)(mem::data + i);
+        uint32_t insn2 = *(uint32_t*)(mem::data + i + 4);
+        if ((insn1 & 0xFFC003E0) == 0xB9400C00) {
+            if ((insn2 & 0xFFFFF000) == 0x71001800) {
+                uintptr_t candidate = mem::find_func(i);
+                if (!candidate) continue;
+                size_t cand_end = next_func_addr_vm(candidate);
+                int bl_count = 0;
+                for (size_t pc = candidate; pc < cand_end; pc += 4) {
+                    if (is_bl(*(uint32_t*)(mem::data + pc))) bl_count++;
+                }
+                
+                if (bl_count >= 2) {
+                    index2addr_addr = candidate;
+                    break;
+                }
+            }
+        }
+    }
+    uintptr_t top_offset = 0x38;  
+    uintptr_t base_offset = 0x40; 
+    uintptr_t g_offset = 0x60;
+    if (index2addr_addr) {
+        uintptr_t f_end = next_func_addr_vm(index2addr_addr);
+        for (uintptr_t pc = index2addr_addr; pc < f_end; pc += 4) {
+            uint32_t insn = *(uint32_t*)(mem::data + pc);
+            if ((insn & 0xFFC00000) == 0xA9400000) {
+                uint32_t offset = ((insn >> 15) & 0x7F) << 3; 
+                if (offset == 0x38 || offset == 0x30 || offset == 0x40) {
+                    top_offset = offset;
+                    base_offset = offset + 8;
+                }
+            }
+        }
+    } else {
+        index2addr_addr = 0x021BCA54; 
+    }
+    for (size_t i = 0; i < scans.size(); ++i) {
+        if (scans[i].name == "lua_index2addr") results[i] = index2addr_addr;
+        else if (scans[i].name == "lua_state_top") results[i] = top_offset;
+        else if (scans[i].name == "lua_state_base") results[i] = base_offset;
+        else if (scans[i].name == "lua_state_global_state") results[i] = g_offset;
+    }
+}
+
+void resolve_luau_push_helpers(const std::vector<scan>& scans, std::vector<uintptr_t>& results) {
+    if (!mem::is_arm64) return;
+
+    uintptr_t getfield_addr = 0;
+    uintptr_t setfield_addr = 0;
+
+    for (size_t i = 0; i < scans.size(); ++i) {
+        if (scans[i].name == "luagetfield") getfield_addr = results[i];
+        if (scans[i].name == "luasetfield") setfield_addr = results[i];
+    }
+    if (!getfield_addr) getfield_addr = 0x05ABAC1C; 
+    if (!setfield_addr) setfield_addr = 0x05ABAD20;
+
+    uintptr_t gf_end = next_func_addr_vm(getfield_addr);
+    uintptr_t luaS_newlstr_addr = 0;
+    for (uintptr_t pc = getfield_addr; pc < gf_end; pc += 4) {
+        uint32_t insn = *(uint32_t*)(mem::data + pc);
+        if (is_bl(insn)) {
+            uintptr_t target = decode_bl(insn, pc);
+            size_t target_end = next_func_addr_vm(target);
+            size_t target_size = target_end - target;
+            if (target_size > 0x80 && target_size < 0x400) {
+                luaS_newlstr_addr = target;
+                break;
+            }
+        }
+    }
+    uintptr_t pushlstring_addr = 0;
+    size_t begin = (mem::text_start + 3) & ~3ULL;
+    size_t end = mem::text_end - 4;
+    if (luaS_newlstr_addr) {
+        for (size_t i = begin; i < end; i += 4) {
+            uint32_t insn = *(uint32_t*)(mem::data + i);
+            if (is_bl(insn) && decode_bl(insn, i) == luaS_newlstr_addr) {
+                uintptr_t parent = mem::find_func(i);
+                if (!parent || parent == getfield_addr || parent == setfield_addr) continue;
+
+                size_t p_end = next_func_addr_vm(parent);
+                bool has_stack_offset = false;
+                for (size_t pc = parent; pc < p_end; pc += 4) {
+                    uint32_t inner_insn = *(uint32_t*)(mem::data + pc);
+                    if ((inner_insn & 0xFFC00000) == 0xF9400000) {
+                        uint32_t imm = ((inner_insn >> 10) & 0xFFF) << 3;
+                        if (imm == 0x38) {
+                            has_stack_offset = true;
+                            break;
+                        }
+                    }
+                }
+
+                if (has_stack_offset) {
+                    pushlstring_addr = parent;
+                    break;
+                }
+            }
+        }
+    }
+    for (size_t i = 0; i < scans.size(); ++i) {
+        if (scans[i].name == "luas_newlstr") results[i] = luaS_newlstr_addr;
+        else if (scans[i].name == "lua_pushlstring") results[i] = pushlstring_addr;
+    }
+}
+
+void resolve_miscstuff(const std::vector<scan>& scans, std::vector<uintptr_t>& results) {
+    if (!mem::is_arm64) return;
+    uintptr_t game_loaded_func_addr = 0;
+    uintptr_t on_game_leave_func_addr = 0;
+    
+    uintptr_t str_loaded = mem::find_str("onGameLoaded() SessionReporterState_GameLoaded placeId:%lld");
+    if (str_loaded) {
+        auto xrefs_loaded = mem::find_xrefs(str_loaded);
+        if (!xrefs_loaded.empty()) {
+            game_loaded_func_addr = mem::find_func(xrefs_loaded[0]);
+        }
+    }
+    uintptr_t str_leave = mem::find_str("onGameLeaveBegin() SessionReporterState_GameExitRequested placeId:%lld");
+    if (str_leave) {
+        auto xrefs_leave = mem::find_xrefs(str_leave);
+        if (!xrefs_leave.empty()) {
+            on_game_leave_func_addr = mem::find_func(xrefs_leave[0]);
+        }
+    }
+    for (size_t i = 0; i < scans.size(); ++i) {
+        if (scans[i].name == "game_loaded") {
+            if (game_loaded_func_addr) {
+                results[i] = game_loaded_func_addr;
+            }
+        } 
+        else if (scans[i].name == "on_game_leave") {
+            if (on_game_leave_func_addr) {
+                results[i] = on_game_leave_func_addr;
+            }
+        }
+    }
+}
+
+void resolve_getcapabilities(const std::vector<scan>& scans, std::vector<uintptr_t>& results) {
+    if (!mem::is_arm64) return;
+    uintptr_t str_addr = mem::find_str("Callbacks cannot yield");
+    if (!str_addr) return;
+    auto xrefs = mem::find_xrefs(str_addr);
+    if (xrefs.empty()) return;
+    for (uintptr_t xref : xrefs) {
+        uintptr_t caller_func = mem::find_func(xref);
+        if (!caller_func) continue;
+        size_t next_func = next_func_addr_vm(caller_func);
+        for (size_t pc = caller_func; pc < next_func; pc += 4) {
+            uint32_t insn = *(uint32_t*)(mem::data + pc);
+            if (!is_bl(insn)) continue;
+            uintptr_t candidate = decode_bl(insn, pc);
+            if (candidate < mem::text_start || candidate >= mem::text_end) continue;
+            bool has_loop_0x50 = false;
+            size_t cand_end = next_func_addr_vm(candidate);
+            for (size_t i = candidate; i < cand_end; i += 4) {
+                uint32_t ins = *(uint32_t*)(mem::data + i);
+                if ((ins & 0xFF000000) == 0xF1000000 && ((ins >> 10) & 0xFFF) == 0x50) {
+                    has_loop_0x50 = true;
+                    break;
+                }
+            }
+            if (has_loop_0x50) {
+                for (size_t i = 0; i < scans.size(); ++i) {
+                    if (scans[i].name == "getcapabilities") {
+                        results[i] = candidate;
+                        return;
+                    }
+                }
+            }
+        }
+    }
+}
+
+void resolve_vm_offsets(const std::vector<scan>& scans, std::vector<uintptr_t>& results) {
+    if (!mem::is_arm64) return;
+
+    uintptr_t lua_resume = 0;
+    uintptr_t luaG_runerror = 0;
+    for (size_t i = 0; i < scans.size(); ++i) {
+        if (scans[i].name == "luaresume") lua_resume = results[i];
+        else if (scans[i].name == "luaG_runerror") luaG_runerror = results[i];
+    }
+
+    uintptr_t luau_execute = 0;
+    uintptr_t luaD_throw = 0;
+    uintptr_t luaC_step = 0;
+    {
+        const uint8_t sig[] = { 0xe9, 0x23, 0xba, 0x6d, 0xfd, 0x7b, 0x01, 0xa9, 0xf9, 0x13, 0x00, 0xf9 };
+        for (size_t pc = mem::text_start; pc <= mem::text_end - 0x30; pc += 4) {
+            if (memcmp(mem::data + pc, sig, sizeof(sig)) == 0) {
+                uint32_t insn = *(uint32_t*)(mem::data + pc + 0x24);
+                uint32_t op = insn & 0xFFC00000;
+                uint32_t imm12 = (insn >> 10) & 0xFFF;
+                if (op == 0x71000000 && imm12 == 201) {
+                    luau_execute = pc;
+                    break;
+                }
+            }
+        }
+    }
+    if (luaG_runerror) {
+        uintptr_t body_candidate = 0;
+        for (size_t pc = luaG_runerror; pc < luaG_runerror + 128 && pc < mem::text_end; pc += 4) {
+            uint32_t insn = *(uint32_t*)(mem::data + pc);
+            if (is_bl(insn)) {
+                uintptr_t target = decode_bl(insn, pc);
+                if (target >= mem::text_start && target < mem::text_end) {
+                    int64_t diff = (int64_t)target - (int64_t)luaG_runerror;
+                    if (diff > -0x2000 && diff < 0x2000) {
+                        body_candidate = target;
+                        break;
+                    }
+                }
+            }
+        }
+
+        if (body_candidate) {
+            for (size_t pc = body_candidate; pc < body_candidate + 400 && pc < mem::text_end; pc += 4) {
+                uint32_t insn = *(uint32_t*)(mem::data + pc);
+                if (is_bl(insn)) {
+                    uintptr_t target = decode_bl(insn, pc);
+                    if (target >= mem::text_start && target < mem::text_end) {
+                        bool has_mov = false;
+                        for (int k = 0; k < 12; ++k) {
+                            size_t addr = target + k * 4;
+                            if (addr >= mem::text_end) break;
+                            uint32_t ins = *(uint32_t*)(mem::data + addr);
+                            if (ins == 0x52800300) {
+                                has_mov = true;
+                                break;
+                            }
+                        }
+                        if (has_mov) {
+                            luaD_throw = target;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    if (lua_resume) {
+        uintptr_t luau_range_start = (lua_resume >= 0x200000) ? lua_resume - 0x200000 : mem::text_start;
+        uintptr_t luau_range_end = std::min(lua_resume + 0x200000, (uintptr_t)mem::text_end);
+
+        struct GCFunction {
+            uintptr_t addr;
+            std::vector<uintptr_t> calls;
+        };
+        std::vector<GCFunction> gc_funcs;
+        uintptr_t curr_func = 0;
+        bool has_gc_offsets = false;
+        std::vector<uintptr_t> bl_calls;
+        for (size_t pc = luau_range_start; pc < luau_range_end; pc += 4) {
+            uint32_t insn = *(uint32_t*)(mem::data + pc);
+            if (is_func_prologue_vm(insn)) {
+                if (curr_func != 0 && has_gc_offsets) {
+                    gc_funcs.push_back({curr_func, bl_calls});
+                }
+                curr_func = pc;
+                has_gc_offsets = false;
+                bl_calls.clear();
+            }
+            if (curr_func != 0) {
+                uint32_t op = insn & 0xffc00000;
+                if (op == 0xf9400000 || op == 0xf9000000) {
+                    uint32_t imm = ((insn >> 10) & 0xfff) << 3;
+                    if (imm >= 0x4400 && imm <= 0x4750) {
+                        has_gc_offsets = true;
+                    }
+                } else if (is_bl(insn)) {
+                    uintptr_t target = decode_bl(insn, pc);
+                    if (target >= mem::text_start && target < mem::text_end) {
+                        bl_calls.push_back(target);
+                    }
+                }
+            }
+        }
+        if (curr_func != 0 && has_gc_offsets) {
+            gc_funcs.push_back({curr_func, bl_calls});
+        }
+
+        std::vector<uintptr_t> unique_targets;
+        for (const auto& gf : gc_funcs) {
+            for (uintptr_t target : gf.calls) {
+                if (std::find(unique_targets.begin(), unique_targets.end(), target) == unique_targets.end()) {
+                    unique_targets.push_back(target);
+                }
+            }
+        }
+
+        for (uintptr_t target : unique_targets) {
+            size_t e = next_func_addr_vm(target);
+            bool target_has_gc = false;
+            for (size_t pc = target; pc < e; pc += 4) {
+                uint32_t insn = *(uint32_t*)(mem::data + pc);
+                uint32_t op = insn & 0xffc00000;
+                if (op == 0xf9400000 || op == 0xf9000000) {
+                    uint32_t imm = ((insn >> 10) & 0xfff) << 3;
+                    if (imm >= 0x4400 && imm <= 0x4750) {
+                        target_has_gc = true;
+                        break;
+                    }
+                }
+            }
+            if (target_has_gc) {
+                luaC_step = target;
+                break;
+            }
+        }
+    }
+
+    uintptr_t luaE_newthread = 0;
+    {
+        size_t begin = (mem::text_start + 3) & ~3ULL;
+        size_t end = mem::text_end - 32;
+        for (size_t i = begin; i < end; i += 4) {
+            uint32_t ins1 = *(uint32_t*)(mem::data + i);
+            if (ins1 == 0x52800101) {
+                for (int j = 1; j < 5; ++j) {
+                    uint32_t ins2 = *(uint32_t*)(mem::data + i + j * 4);
+                    if ((ins2 & 0xFF80001F) == 0x52800002) {
+                        uint32_t imm = (ins2 >> 5) & 0xFFFF;
+                        if (imm >= 16 && imm <= 48 && (imm % 8) == 0) {
+                            for (int k = 1; k < 5; ++k) {
+                                uint32_t ins3 = *(uint32_t*)(mem::data + i + (j + k) * 4);
+                                if (is_bl(ins3)) {
+                                    luaE_newthread = mem::find_func(i);
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    if (luaE_newthread) break;
+                }
+            }
+            if (luaE_newthread) break;
+        }
+    }
+
+    uintptr_t lua_newthread = 0;
+    if (luaE_newthread) {
+        std::vector<uintptr_t> callers;
+        size_t begin = (mem::text_start + 3) & ~3ULL;
+        size_t end = mem::text_end - 4;
+        for (size_t i = begin; i < end; i += 4) {
+            uint32_t ins = *(uint32_t*)(mem::data + i);
+            if (is_bl(ins)) {
+                uintptr_t target = decode_bl(ins, i);
+                if (target == luaE_newthread) {
+                    uintptr_t caller_func = mem::find_func(i);
+                    if (caller_func && std::find(callers.begin(), callers.end(), caller_func) == callers.end()) {
+                        callers.push_back(caller_func);
+                    }
+                }
+            }
+        }
+
+        uintptr_t getscheduler_addr = 0;
+        for (size_t i = 0; i < scans.size(); ++i) {
+            if (scans[i].name == "getscheduler") {
+                getscheduler_addr = results[i];
+                break;
+            }
+        }
+
+        for (uintptr_t caller : callers) {
+            bool calls_scheduler = false;
+            size_t next_func = next_func_addr_vm(caller);
+            for (size_t pc = caller; pc < next_func; pc += 4) {
+                uint32_t ins = *(uint32_t*)(mem::data + pc);
+                if (is_bl(ins)) {
+                    uintptr_t target = decode_bl(ins, pc);
+                    if (getscheduler_addr && target == getscheduler_addr) {
+                        calls_scheduler = true;
+                        break;
+                    }
+                }
+            }
+            if (!calls_scheduler) {
+                lua_newthread = caller;
+                break;
+            }
+        }
+    }
+
+    for (size_t i = 0; i < scans.size(); ++i) {
+        if (scans[i].name == "luau_execute") results[i] = luau_execute;
+        else if (scans[i].name == "luaD_throw") results[i] = luaD_throw;
+        else if (scans[i].name == "luaC_step") results[i] = luaC_step;
+        else if (scans[i].name == "luaE_newthread") results[i] = luaE_newthread;
+        else if (scans[i].name == "lua_newthread") results[i] = lua_newthread;
+    }
+    resolve_getcapabilities(scans, results);
+    resolve_tsconstrctor(scans, results);
+    resolve_tsdecoffsets(scans, results);
+    resolvejobevents(scans, results);
+    resolve_network_telemetry(scans, results);
+    resolve_lua_index2addr(scans, results);
+    resolve_luau_push_helpers(scans, results);
+    resolve_miscstuff(scans, results);
 }
