@@ -8,7 +8,7 @@ namespace Offsets {
     constexpr uintptr_t Scriptstart = 0x394A818;
     constexpr uintptr_t Firetouchinterest = 0x45A668C;
     constexpr uintptr_t Jobstart = 0x1FDB078;
-    constexpr uintptr_t Jobstop = 0x1FDB2B8;
+    constexpr uintptr_t Jobstop = 0x1FDB658;
     constexpr uintptr_t RobloxSpawn = 0x1C69A24;
     constexpr uintptr_t Taskdesynchronize = 0x3940D00;
     constexpr uintptr_t TaskSynchronize = 0x3940AF4;
@@ -17,6 +17,7 @@ namespace Offsets {
     constexpr uintptr_t TaskDelay = 0x220CD38;
     constexpr uintptr_t TaskWait = 0x2245700;
     constexpr uintptr_t TaskCancel = 0x3940F0C;
+    constexpr uintptr_t Taskschedulerconstructor = 0x1FCB830;
     constexpr uintptr_t Rawscheduler = 0x2087980;
     constexpr uintptr_t Taskschedulerfps = 0x1C818E0;
     constexpr uintptr_t Lockviolationcrash = 0x1F35ED8;
@@ -27,7 +28,6 @@ namespace Offsets {
     constexpr uintptr_t Getluastate = 0x21B9EA0;
     constexpr uintptr_t KTable = 0x21BE7D8;
     constexpr uintptr_t Scriptcontextresume = 0x21BD52C;
-    constexpr uintptr_t Robloxlogcrash = 0x5E51230;
     constexpr uintptr_t Stdstringconstructor = 0x1C57BF8;
     constexpr uintptr_t Luauloadinternal = 0x1C53600;
     constexpr uintptr_t Luauloadcorescripts = 0x1DF4E48;
@@ -40,15 +40,14 @@ namespace Offsets {
     constexpr uintptr_t InvalidKeyNext = 0x21CF798;
     constexpr uintptr_t NewIndex = 0x1F06C80;
     constexpr uintptr_t NamecallHandler = 0x21A9C64;
-    constexpr uintptr_t InvokeServer = 0x41CFCF4;
+    constexpr uintptr_t InvokeServer = 0x41CFCDC;
     constexpr uintptr_t FireServer = 0x3ED2694;
     constexpr uintptr_t FireAllClients = 0x3ED2DB4;
     constexpr uintptr_t InvokeClient = 0x41D0BBC;
-    constexpr uintptr_t LuauLoad = 0x5ADA0C0;
+    constexpr uintptr_t LuauLoad = 0x5ADA0A4;
     constexpr uintptr_t LuauYield = 0x21EFB88;
     constexpr uintptr_t ResumeWaitingScripts = 0x395CC94;
     constexpr uintptr_t GetScheduler = 0x1C55F4C;
-    constexpr uintptr_t SetThreadIdentity = 0x21BCA54;
     constexpr uintptr_t NewProxy = 0x5ABCF04;
     constexpr uintptr_t LoadString = 0x3983C10;
     constexpr uintptr_t GetFenv = 0x39842F4;
@@ -59,4 +58,18 @@ namespace Offsets {
     constexpr uintptr_t Luau_Execute = 0x3957014;
     constexpr uintptr_t LuaD_Throw = 0x5AC3F44;
     constexpr uintptr_t LuaC_Step = 0x21ADDA4;
+    constexpr uintptr_t luaE_newthread = 0x5BB4A50;
+    constexpr uintptr_t lua_newthread = 0x5BA4B18;
+    constexpr uintptr_t Getcapabilities = 0x22757C4;
+    constexpr uintptr_t TaskschedulerMutex = 0x98;
+    constexpr uintptr_t TaskschedulerQueue = 0x1C8;
+    constexpr uintptr_t TaskschedulerWorkers = 0x148;
+    constexpr uintptr_t TelemetryBuffer = 0x180;
+    constexpr uintptr_t TelemetrySize = 0x1C0;
+    constexpr uintptr_t lua_index2addr = 0x21BCA54;
+    constexpr uintptr_t lua_State_top = 0x38;
+    constexpr uintptr_t lua_State_base = 0x40;
+    constexpr uintptr_t lua_State_global_State = 0x60;
+    constexpr uintptr_t luaS_newlstr = 0x5ABB89C;
+    constexpr uintptr_t lua_pushlstring = 0x21A7FD8;
 }
