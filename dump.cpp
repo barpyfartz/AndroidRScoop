@@ -16,7 +16,7 @@ std::vector<scan> scans = {
     {"firetouchinterest", "new overlap in different world", "", 0, 0, false},
     {"jobstart", "[FLog::TaskSchedulerRun] JobStart %s", "", 0, 0, false},
     {"jobstop", "[FLog::TaskSchedulerRun] JobStop %s", "", 0, 0, false},
-    {"rbxspawn", "", "fd 7b bd a9 f6 57 01 a9 f4 4f 02 a9 fd 03 00 91 ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? df 08", 0, 0, false},
+    {"rbxspawn", "", "fd 7b bd a9 f6 57 01 a9 f4 4f 02 a9 fd 03 00 91 ?? ?? ?? ?? ?? ?? 3a 91 f3 03 00 aa 08 fd df 08 ?? ?? ?? ?? ?? ?? 39 91 48 06 00 36", 0, 0, false},
     {"taskdesynchronize", "task.desynchronize() should only be called from a script that is a descendant of an Actor", "", 0, 0, false},
     {"task_synchronize", "", "", 0, 0, false}, // thx pereoxide
     {"task_defer", "", "", 0, 0, false},
@@ -26,18 +26,18 @@ std::vector<scan> scans = {
     {"task_cancel", "", "", 0, 0, false},
     {"taskschedulerconstructor", "HumanoidParallelManagerTaskQueue", "", 0, 0, false},
     {"rawscheduler", "HumanoidParallelManagerTaskQueue", "", 0, 1, false}, // caller
-    {"taskschedulerfps", "", "fd 7b bd a9 f5 0b 00 f9 f4 4f 02 a9 fd 03 00 91 ?? ?? ?? 90 ?? ?? ?? 91", 0, 0, false},
+    {"taskschedulerfps", "", "fd 7b bd a9 f5 0b 00 f9 f4 4f 02 a9 fd 03 00 91 ?? ?? ?? 90 ?? ?? ?? 91 ?? ?? ?? f0 ?? ?? ?? 91 ?? ?? ?? 90 ?? ?? ?? 91 ?? ?? ?? a9 88 0c 80 52", 0, 0, false},
     {"lockviolationcrash", "LockViolationInstanceCrash", "", 0, 0, false},
     {"lockviolationscriptcrash", "LockViolationScriptCrash", "", 0, 0, false},
     {"luastepinternaloverride", "LuaStepIntervalMsOverrideEnabled", "", 0, 0, false},
     {"hashtablelookup", "Unable to query property {}. It is not scriptable", "", 0, 0, false},
-    {"getglobalstateforinstance", "", "fd 7b be a9 f4 4f 01 a9 fd 03 00 91 f3 03 02 aa f4 03 01 aa ?? ?? ?? ?? e1 03 14 aa e2 03 13 aa ?? ?? ?? ?? 08 24 40 29", 0, 0, false},
-    {"getluastate", "", "fd 7b be a9 f4 4f 01 a9 fd 03 00 91 f3 03 02 aa f4 03 01 aa ?? ?? ?? ?? e1 03 14 aa e2 03 13 aa ?? ?? ?? ?? 08 24 40 29", 0, 0, false},
+    {"getglobalstateforinstance", "", "ff 83 00 d1 fd 7b 01 a9 fd 43 00 91 08 21 82 52 08 00 08 8b 08 fd df 88 1f 0d 00 71", 0, 0, false},
+    {"getluastate", "", "ff c3 02 d1 fd 7b 05 a9 fc 6f 06 a9 fa 67 07 a9 f8 5f 08 a9 f6 57 09 a9 f4 4f 0a a9 fd 43 01 91 ?? ?? ?? b0 f3 03 01 aa f5 03 00 aa", 0, 0, false},
     {"ktable", "", "fd 7b bd a9 f6 57 01 a9 f4 4f 02 a9 fd 03 00 91 f3 03 00 aa ?? ?? ?? ?? 15 14 40 f9 f4 03 00 aa 53 01 00 b4", 0, 0, false},
     {"scriptcontextresume", "", "ff 03 06 d1 e8 8b 00 fd fd 7b 12 a9 fc 6f 13 a9 fa 67 14 a9 f8 5f 15 a9 f6 57 16 a9 f4 4f 17 a9 fd 83 04 91 ?? ?? ?? b0 ?? ?? ?? b0 f6 03 00 aa ?? ?? ?? f9 f8 03 04 aa fa 03 03 2a", 0, 0, false},
     // {"robloxlogcrash", "", "", 0, 0, false},
     {"enableloadmodule", "EnableLoadModule", "", 0, 0, false},
-    {"stdstringconstructor", "", "fd 7b bd a9 f6 57 01 a9 f4 4f 02 a9 fd 03 00 91 f3 03 00 aa", 0, 0, false},
+    {"stdstringconstructor", "", "fd 7b bd a9 f6 57 01 a9 f4 4f 02 a9 fd 03 00 91 f3 03 00 aa 00 00 40 f9 f5 03 01 aa 74 0a 40 f9 60 02 00 b4 00 00 80 f9 40 03 00 37", 0, 0, false},
     {"luauloadinternal", "", "?? ?? ?? b4 fd 7b bc a9 f8 5f 01 a9 f6 57 02 a9 f4 4f 03 a9 fd 03 00 91", 0, 0, false},
     {"luauloadcorescripts", "", "fd 7b ba a9 fc 6f 01 a9 fa 67 02 a9 f8 5f 03 a9 f6 57 04 a9 f4 4f 05 a9 fd 03 00 91 ff 83 06 d1", 0, 0, false},
     {"validateandsetupcaps", "", "ff 83 02 d1 fd 7b 06 a9 f8 5f 07 a9 f6 57 08 a9 f4 4f 09 a9", 0, 0, false},
@@ -62,8 +62,8 @@ std::vector<scan> scans = {
     {"getfenv", "", "fd 7b be a9 f3 0b 00 f9 fd 03 00 91 f3 03 00 aa ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? 01 00 90 52 ?? ?? ?? ?? e0 03 13 aa 21 00 80 52", 0, 0, false},
     {"setfenv", "", "fd 7b be a9 f3 0b 00 f9 fd 03 00 91 f3 03 00 aa ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? 01 00 90 52 ?? ?? ?? ?? e0 03 13 aa 41 00 80 52", 0, 0, false},
     {"luaG_aritherror", "", "fd 7b bd a9 f6 57 01 a9 f4 4f 02 a9 fd 03 00 91 f5 03 03 2a f6 03 02 aa f3 03 00 aa ?? ?? ?? ?? f4 03 00 aa e0 03 13 aa e1 03 16 aa", 0, 0, false},
-    {"luagetfield", "", "", 0, 0, false}, 
-    {"luasetfield", "", "", 0, 0, false},
+    {"luagetfield", "", "fd 7b bc a9 f7 0b 00 f9 f6 57 02 a9 f4 4f 03 a9 fd 03 00 91 f4 03 02 aa 3f 04 00 71 f3 03 00 aa 2b 01 00 54 69 a2 43 a9 08 51 21 8b 08 41 00 d1", 0, 0, false},
+    {"luasetfield", "", "fd 7b bc a9 f7 0b 00 f9 f6 57 02 a9 f4 4f 03 a9 fd 03 00 91 f4 03 03 2a f5 03 02 aa 3f 04 00 71 f3 03 00 aa 2b 01 00 54 69 a2 43 a9 08 51 21 8b 08 41 00 d1", 0, 0, false},
     {"luau_execute", "", "", 0, 0, false},
     {"luaD_throw", "", "", 0, 0, false},
     {"luaC_step", "", "", 0, 0, false},
@@ -75,12 +75,15 @@ std::vector<scan> scans = {
     {"taskscheduler_workers", "", "", 0, 0, true},
     {"telemetry_buffer", "", "", 0, 0, true},
     {"telemetry_size", "", "", 0, 0, true},
-    {"lua_index2addr", "", "", 0, 0, false},
+    {"lua_index2addr", "", "fd 7b bd a9 f6 57 01 a9 f4 4f 02 a9 fd 03 00 91 f3 03 02 aa f4 03 01 2a 3f 04 00 71 f5 03 00 aa 2b 01 00 54 a9 a2 43 a9 08 51 34 8b 08 41 00 d1", 0, 0, false},
     {"lua_state_top", "", "", 0, 0, true},
     {"lua_state_base", "", "", 0, 0, true},
     {"lua_state_global_state", "", "", 0, 0, true},
     {"luas_newlstr", "", "", 0, 0, false},
     {"lua_pushlstring", "", "", 0, 0, false},
+    {"luaD_call", "", "fd 7b bc a9 f7 0b 00 f9 f6 57 02 a9 f4 4f 03 a9 fd 03 00 91 28 0c 40 b9 f4 03 02 2a f6 03 01 aa f3 03 00 aa 1f 21 00 71 80 00 00 54 e0 03 13 aa e1 03 16 aa", 0, 0, false},
+    {"luaD_resume", "", "", 0, 0, false},
+    {"coroutine_yield", "", "", 0, 0, false},
 };
 
 static inline bool is_bl(uint32_t insn) {
@@ -579,7 +582,7 @@ void resolve_tsconstrctor(const std::vector<scan>& scans, std::vector<uintptr_t>
 }
 
 void resolvejobevents(const std::vector<scan>& scans, std::vector<uintptr_t>& results) {
-    if (!mem::is_arm64) return; 
+    if (!mem::is_arm64) return;
     size_t start_idx = -1;
     size_t stop_idx = -1;
     for (size_t i = 0; i < scans.size(); ++i) {
@@ -587,51 +590,30 @@ void resolvejobevents(const std::vector<scan>& scans, std::vector<uintptr_t>& re
         if (scans[i].name == "jobstop") stop_idx = i;
     }
     uintptr_t start_str = mem::find_str("[FLog::TaskSchedulerRun] JobStart %s");
-    if (start_str && start_idx != -1) {
+    if (start_str && start_idx != (size_t)-1) {
         auto xrefs = mem::find_xrefs(start_str);
         for (uintptr_t xref : xrefs) {
             uintptr_t func = mem::find_func(xref);
+            if (!func) continue;
             uintptr_t f_end = next_func_addr_vm(func);
-            if ((f_end - func) > 0x60) { 
+            if ((f_end - func) > 0x60) {
                 results[start_idx] = func;
                 break;
             }
         }
     }
-    if (results[start_idx] && stop_idx != -1) {
-        uintptr_t search_start = results[start_idx];
-        uintptr_t search_end = search_start + 0x1000;
-        uintptr_t current_func = search_start;
-        while (current_func < search_end && current_func < mem::text_end) {
-            uintptr_t func_end = next_func_addr_vm(current_func);
-            bool has_mutex_offset = false;
-            bool has_cond_offset = false;
-            for (uintptr_t pc = current_func; pc < func_end; pc += 4) {
-                uint32_t insn = *(uint32_t*)(mem::data + pc);
-                if ((insn & 0xFFC003E0) == 0x91000260) { 
-                    uint32_t imm12 = (insn >> 10) & 0xFFF;
-                    if (imm12 == 0x98) has_mutex_offset = true;
-                    if (imm12 == 0x70) has_cond_offset = true;
-                }
-                if ((insn & 0xFFC00000) == 0x91000000) {
-                    uint32_t imm12 = (insn >> 10) & 0xFFF;
-                    uint32_t rd = insn & 0x1F;
-                    if (rd == 0) {
-                        if (imm12 == 0x98) has_mutex_offset = true;
-                        if (imm12 == 0x70) has_cond_offset = true;
-                    }
-                }
-            }
-            if (has_mutex_offset && has_cond_offset) {
-                results[stop_idx] = current_func;
+    uintptr_t stop_str = mem::find_str("[FLog::TaskSchedulerRun] JobStop %s");
+    if (stop_str && stop_idx != (size_t)-1) {
+        auto xrefs = mem::find_xrefs(stop_str);
+        for (uintptr_t xref : xrefs) {
+            uintptr_t func = mem::find_func(xref);
+            if (!func) continue;
+            uintptr_t f_end = next_func_addr_vm(func);
+            if ((f_end - func) > 0x60) {
+                results[stop_idx] = func;
                 break;
             }
-            
-            current_func = func_end;
         }
-    }
-    if (!results[stop_idx] || results[stop_idx] == results[start_idx] || results[stop_idx] < 0x1FDB300) {
-        results[stop_idx] = results[start_idx] + 0x5E0;
     }
 }
 
@@ -780,7 +762,6 @@ void resolve_lua_index2addr(const std::vector<scan>& scans, std::vector<uintptr_
                 for (size_t pc = candidate; pc < cand_end; pc += 4) {
                     if (is_bl(*(uint32_t*)(mem::data + pc))) bl_count++;
                 }
-                
                 if (bl_count >= 2) {
                     index2addr_addr = candidate;
                     break;
@@ -788,24 +769,35 @@ void resolve_lua_index2addr(const std::vector<scan>& scans, std::vector<uintptr_
             }
         }
     }
-    uintptr_t top_offset = 0x38;  
-    uintptr_t base_offset = 0x40; 
-    uintptr_t g_offset = 0x60;
-    if (index2addr_addr) {
-        uintptr_t f_end = next_func_addr_vm(index2addr_addr);
-        for (uintptr_t pc = index2addr_addr; pc < f_end; pc += 4) {
-            uint32_t insn = *(uint32_t*)(mem::data + pc);
-            if ((insn & 0xFFC00000) == 0xA9400000) {
-                uint32_t offset = ((insn >> 15) & 0x7F) << 3; 
-                if (offset == 0x38 || offset == 0x30 || offset == 0x40) {
-                    top_offset = offset;
-                    base_offset = offset + 8;
-                }
+
+    // scans big booty fallback
+    if (!index2addr_addr) {
+        for (size_t i = 0; i < scans.size(); ++i) {
+            if (scans[i].name == "lua_index2addr" && results[i]) {
+                index2addr_addr = results[i];
+                break;
             }
         }
-    } else {
-        index2addr_addr = 0x021BCA54; 
     }
+
+    if (!index2addr_addr) return;
+
+    uintptr_t top_offset = 0x38;
+    uintptr_t base_offset = 0x40;
+    uintptr_t g_offset = 0x60;
+
+    uintptr_t f_end = next_func_addr_vm(index2addr_addr);
+    for (uintptr_t pc = index2addr_addr; pc < f_end; pc += 4) {
+        uint32_t insn = *(uint32_t*)(mem::data + pc);
+        if ((insn & 0xFFC00000) == 0xA9400000) {
+            uint32_t offset = ((insn >> 15) & 0x7F) << 3;
+            if (offset == 0x38 || offset == 0x30 || offset == 0x40) {
+                top_offset = offset;
+                base_offset = offset + 8;
+            }
+        }
+    }
+
     for (size_t i = 0; i < scans.size(); ++i) {
         if (scans[i].name == "lua_index2addr") results[i] = index2addr_addr;
         else if (scans[i].name == "lua_state_top") results[i] = top_offset;
@@ -824,9 +816,7 @@ void resolve_luau_push_helpers(const std::vector<scan>& scans, std::vector<uintp
         if (scans[i].name == "luagetfield") getfield_addr = results[i];
         if (scans[i].name == "luasetfield") setfield_addr = results[i];
     }
-    if (!getfield_addr) getfield_addr = 0x05ABAC1C; 
-    if (!setfield_addr) setfield_addr = 0x05ABAD20;
-
+    if (!getfield_addr || !setfield_addr) return;
     uintptr_t gf_end = next_func_addr_vm(getfield_addr);
     uintptr_t luaS_newlstr_addr = 0;
     for (uintptr_t pc = getfield_addr; pc < gf_end; pc += 4) {
@@ -850,7 +840,6 @@ void resolve_luau_push_helpers(const std::vector<scan>& scans, std::vector<uintp
             if (is_bl(insn) && decode_bl(insn, i) == luaS_newlstr_addr) {
                 uintptr_t parent = mem::find_func(i);
                 if (!parent || parent == getfield_addr || parent == setfield_addr) continue;
-
                 size_t p_end = next_func_addr_vm(parent);
                 bool has_stack_offset = false;
                 for (size_t pc = parent; pc < p_end; pc += 4) {
@@ -943,6 +932,97 @@ void resolve_getcapabilities(const std::vector<scan>& scans, std::vector<uintptr
                 }
             }
         }
+    }
+}
+
+void resolve_luauyeildoffsets(const std::vector<scan>& scans, std::vector<uintptr_t>& results) {
+    if (!mem::is_arm64) return;
+    uintptr_t luau_yield_addr = 0;
+    uintptr_t str_yield = mem::find_str("attempt to yield across metamethod/C-call boundary");
+    if (str_yield) {
+        auto xrefs_str = mem::find_xrefs(str_yield);
+        if (!xrefs_str.empty()) luau_yield_addr = mem::find_func(xrefs_str[0]);
+    }
+    if (!luau_yield_addr) return;
+    uintptr_t task_synchronize = 0, task_desynchronize = 0, task_wait = 0;
+    uintptr_t coroutine_yield = 0, luaD_resume_addr = 0;
+    if (str_yield) {
+        auto xrefs = mem::find_xrefs(str_yield);
+        for (uintptr_t xref : xrefs) {
+            uintptr_t f = mem::find_func(xref);
+            if (!f) continue;
+            size_t f_end = next_func_addr_vm(f);
+            if ((f_end - f) < 0x100) {
+                coroutine_yield = f;
+                break;
+            }
+        }
+    }
+    auto callers = mem::find_xrefs(luau_yield_addr);
+    for (uintptr_t target : callers) {
+        uintptr_t caller_func = mem::find_func(target);
+        if (!caller_func) continue;
+        uint32_t first_insn = *(uint32_t*)(mem::data + caller_func);
+        size_t func_end = next_func_addr_vm(caller_func);
+        size_t func_size = func_end - caller_func;
+        if (is_func_prologue_vm(first_insn) && func_size < 0x800) {
+            bool is_desync = false;
+            for (size_t pc = caller_func; pc < func_end && pc < caller_func + 0x100; pc += 4) {
+                if ((*(uint32_t*)(mem::data + pc) & 0xFFC00000) == 0x37000000) {
+                    is_desync = true;
+                    break;
+                }
+            }
+            if (is_desync) task_desynchronize = caller_func;
+            else task_synchronize = caller_func;
+            continue;
+        }
+
+        if (is_func_prologue_vm(first_insn) && func_size > 0x150) {
+            task_wait = caller_func;
+            continue;
+        }
+    }
+    uintptr_t luaresumefromsuspended_addr = 0;
+    uintptr_t str_nonsuspended = mem::find_str("cannot resume non-suspended coroutine");
+    if (str_nonsuspended) {
+        auto xrefs = mem::find_xrefs(str_nonsuspended);
+        for (uintptr_t xref : xrefs) {
+            uintptr_t f = mem::find_func(xref);
+            if (f) {
+                luaresumefromsuspended_addr = f;
+                break;
+            }
+        }
+    }
+    
+    uintptr_t lua_resume_addr = 0;
+    for (size_t i = 0; i < scans.size(); ++i) {
+        if (scans[i].name == "luaresume") {
+            lua_resume_addr = results[i];
+            break;
+        }
+    }
+    if (luaresumefromsuspended_addr) {
+        auto callers = mem::find_bl_xrefs(luaresumefromsuspended_addr);
+        for (uintptr_t site : callers) {
+            uintptr_t caller = mem::find_func(site);
+            if (!caller || caller >= 0x04000000) continue;
+            size_t c_end = next_func_addr_vm(caller);
+            size_t c_size = c_end - caller;
+            if (c_size > 0x50 && c_size < 0x200) {
+                luaD_resume_addr = caller;
+                break;
+            }
+        }
+    }
+    for (size_t i = 0; i < scans.size(); ++i) {
+        if (scans[i].name == "luauyield") results[i] = luau_yield_addr;
+        else if (scans[i].name == "task_synchronize" && task_synchronize) results[i] = task_synchronize;
+        else if (scans[i].name == "taskdesynchronize" && task_desynchronize) results[i] = task_desynchronize;
+        else if (scans[i].name == "task_wait" && task_wait) results[i] = task_wait;
+        else if (scans[i].name == "coroutine_yield" && coroutine_yield) results[i] = coroutine_yield;
+        else if (scans[i].name == "luaD_resume" && luaD_resume_addr) results[i] = luaD_resume_addr;
     }
 }
 
@@ -1174,4 +1254,5 @@ void resolve_vm_offsets(const std::vector<scan>& scans, std::vector<uintptr_t>& 
     resolve_lua_index2addr(scans, results);
     resolve_luau_push_helpers(scans, results);
     resolve_miscstuff(scans, results);
+    resolve_luauyeildoffsets(scans, results);
 }
