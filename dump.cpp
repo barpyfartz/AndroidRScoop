@@ -12,11 +12,12 @@ std::vector<scan> scans = {
     {"print", "Current identity is %d", "", 1, 0, false},
     {"game_loaded", "onGameLoaded() SessionReporterState_GameLoaded placeId:%lld", "", 0, 0, false},
     {"on_game_leave", "onGameLeaveBegin() SessionReporterState_GameExitRequested placeId:%lld", "", 0, 0, false},
-    {"scriptstart", "", "fd 7b bd a9 f6 57 01 a9 f4 4f 02 a9 fd 03 00 91 f5 03 00 aa 1f 7c 00 a9 e0 03 01 aa f3 03 02 aa f4 03 01 aa", 0, 0, false},
+    {"scriptstart", "", "fd 7b bc a9 f7 0b 00 f9 f6 57 02 a9 f4 4f 03 a9 fd 03 00 91 f3 03 04 aa f4 03 03 aa f5 03 02 aa f6 03 01 aa f7 03 08 aa ?? ?? ?? ?? e8 03 17 aa", 0, 0, false},
     {"firetouchinterest", "new overlap in different world", "", 0, 0, false},
     {"jobstart", "[FLog::TaskSchedulerRun] JobStart %s", "", 0, 0, false},
     {"jobstop", "[FLog::TaskSchedulerRun] JobStop %s", "", 0, 0, false},
     {"rbxspawn", "", "fd 7b bd a9 f6 57 01 a9 f4 4f 02 a9 fd 03 00 91 ?? ?? ?? ?? ?? ?? 3a 91 f3 03 00 aa 08 fd df 08 ?? ?? ?? ?? ?? ?? 39 91 48 06 00 36", 0, 0, false},
+    {"rbxspawnconstructor", "", "fd 7b bd a9 f6 57 01 a9 f4 4f 02 a9 fd 03 00 91 ?? ?? ?? ?? ?? ?? ?? ?? f3 03 00 aa 08 fd df 08 ?? ?? ?? ?? ?? ?? ?? ?? 48 06 00 36", 0, 0, false},
     {"taskdesynchronize", "task.desynchronize() should only be called from a script that is a descendant of an Actor", "", 0, 0, false},
     {"task_synchronize", "", "", 0, 0, false}, // thx pereoxide
     {"task_defer", "", "", 0, 0, false},
@@ -38,7 +39,6 @@ std::vector<scan> scans = {
     // {"robloxlogcrash", "", "", 0, 0, false},
     {"enableloadmodule", "EnableLoadModule", "", 0, 0, false},
     {"stdstringconstructor", "", "fd 7b bd a9 f6 57 01 a9 f4 4f 02 a9 fd 03 00 91 f3 03 00 aa 00 00 40 f9 f5 03 01 aa 74 0a 40 f9 60 02 00 b4 00 00 80 f9 40 03 00 37", 0, 0, false},
-    {"luauloadinternal", "", "?? ?? ?? b4 fd 7b bc a9 f8 5f 01 a9 f6 57 02 a9 f4 4f 03 a9 fd 03 00 91", 0, 0, false},
     {"luauloadcorescripts", "", "fd 7b ba a9 fc 6f 01 a9 fa 67 02 a9 f8 5f 03 a9 f6 57 04 a9 f4 4f 05 a9 fd 03 00 91 ff 83 06 d1", 0, 0, false},
     {"validateandsetupcaps", "", "ff 83 02 d1 fd 7b 06 a9 f8 5f 07 a9 f6 57 08 a9 f4 4f 09 a9", 0, 0, false},
     {"luaG_runerror",           "attempt to index %s with '%s'",                    "", 0, 0, false},
@@ -53,7 +53,8 @@ std::vector<scan> scans = {
     {"fireserver",              "FireServer can only be called from the client",     "", 0, 0, false},
     {"fireallclients",          "FireAllClients can only be called from the server", "", 0, 0, false},
     {"invokeclient",            "InvokeClient can only be called from the server",   "", 0, 0, false},
-    {"luauload",               "%s: bytecode version mismatch (expected [%d..%d], got %d)", "", 0, 0, false},
+    {"luau_load",               "%s: bytecode version mismatch (expected [%d..%d], got %d)", "", 0, 0, false}, // for stupid niggers - luau_load is roblox made wrapper, lua_load is low-level
+    {"lua_load", "", "", 0, 0, false},
     {"luauyield",              "attempt to yield across metamethod/C-call boundary", "", 0, 0, false},
     {"resumewaitingscripts",    "WaitingHybridScriptsJob",                            "", 1, 0, false},
     {"getscheduler",            "", "ff c3 01 d1 fd 7b 04 a9 f5 2b 00 f9 f4 4f 06 a9 fd 03 01 91 ?? ?? ?? ?? ?? ?? ?? ?? a8 02 40 f9 a8 83 1f f8 ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? f3 03 00 aa 08 fd df 08 ?? ?? ?? ?? e0 03 13 aa", 0, 0, false},
@@ -84,6 +85,16 @@ std::vector<scan> scans = {
     {"luaD_call", "", "fd 7b bc a9 f7 0b 00 f9 f6 57 02 a9 f4 4f 03 a9 fd 03 00 91 28 0c 40 b9 f4 03 02 2a f6 03 01 aa f3 03 00 aa 1f 21 00 71 80 00 00 54 e0 03 13 aa e1 03 16 aa", 0, 0, false},
     {"luaD_resume", "", "", 0, 0, false},
     {"coroutine_yield", "", "", 0, 0, false},
+    {"luah_new", "", "FD 7B ?? A9 ?? ?? ?? F9 F4 4F 02 A9 FD 03 00 91 14 14 40 F9 F3 03 01 AA 14 01 00 B4", 0, 0, false},
+    {"luau_bytecodeload", "", "ff 03 02 d1 fd 7b 05 a9 f6 57 06 a9 f4 4f 07 a9 fd 43 01 91 ?? ?? ?? ?? 08 00 80 12 f4 03 00 aa", 0, 0, false},
+    {"luau_validateheader", "", "ff c3 01 d1 fd 7b 03 a9 f8 5f 04 a9 f6 57 05 a9 f4 4f 06 a9 fd c3 00 91 ?? ?? ?? ?? ?? ?? ?? ?? e8 02 40 f9 a8 83 1f f8 28 08 40 f9 1f 61 04 f1 63 0a 00 54 f4 03 01 aa ?? ?? ?? ?? 01 0a 00 b4 29 00 40 39 c9 09 00 34 f3 03 02 aa e2 03 08 aa ?? ?? ?? ?? 60 02 00 b9", 0, 0, false},
+    {"rbx_reportbytecode", "", "fd 7b ba a9 fc 6f 01 a9 fa 67 02 a9 f8 5f 03 a9 f6 57 04 a9 f4 4f 05 a9 fd 03 00 91 ff 83 13 d1 ?? ?? ?? ?? f3 03 04 2a f5 03 03 2a 7b 2f 46 f9 f4 03 02 aa f7 03 01 aa 68 03 40 f9 a8 83 1f f8 ?? ?? ?? ?? 08 21 01 91 19 61 40 a9 f9 e3 03 a9", 0, 0, false},
+    {"luau_toobject", "", "fd 7b bf a9 fd 03 00 91 3f 04 00 71 2b 01 00 54 09 a0 43 a9 08 51 21 8b 08 41 00 d1 1f 01 09 eb ?? ?? ?? ?? ?? ?? ?? ?? 00 31 89 9a 08 00 00 14 c8 e1 84 12 3f 00 08 6b 8b 00 00 54 08 1c 40 f9 00 d1 21 8b 02 00 00 14 ?? ?? ?? ?? 08 0c 40 b9 1f 29 00 71", 0, 0, false},
+    {"lua_settop", "", "FD 7B BE A9 F4 4F 01 A9 FD 03 00 91 f4 03 01 2A F3 03 00 AA 41 03 F8 37 ?? ?? ?? ?? ?? ?? ?? ??", 0, 0, false},
+    {"internalstringhash", "", "FD 7B BE A9 F3 0B 00 F9 FD 03 00 91 E0 03 01 AA F3 03 01 AA ?? ?? ?? ?? A0 01 00 B4 29 37 8F 52", 0, 0, false},
+    {"taskscheduler_processjob", "", "FF 43 01 D1 FD 7B 01 A9 F8 5F 02 A9 F6 57 03 A9 F4 4F 04 A9 FD 43 00 91 ?? ?? ?? ?? ?? ?? ?? ?? C8 02 40 F9 E8 07 00 F9 28 00 40 F9 48 06 00 B4", 0, 0, false},
+    {"fireserver_bridge", "", "ff 03 04 d1 fd 7b 0c a9 f8 5f 0d a9 f6 57 0e a9 f4 4f 0f a9 fd 03 03 91 ?? ?? ?? ?? f4 03 02 aa f5 03 01 aa", 0, 0, false},
+    
 };
 
 static inline bool is_bl(uint32_t insn) {
@@ -806,63 +817,114 @@ void resolve_lua_index2addr(const std::vector<scan>& scans, std::vector<uintptr_
     }
 }
 
-void resolve_luau_push_helpers(const std::vector<scan>& scans, std::vector<uintptr_t>& results) {
+void resolve_lua_load(const std::vector<scan>& scans, std::vector<uintptr_t>& results) {
     if (!mem::is_arm64) return;
-
-    uintptr_t getfield_addr = 0;
-    uintptr_t setfield_addr = 0;
-
+    uintptr_t luau_load_addr = 0;
+    size_t lua_load_idx = -1;
     for (size_t i = 0; i < scans.size(); ++i) {
-        if (scans[i].name == "luagetfield") getfield_addr = results[i];
-        if (scans[i].name == "luasetfield") setfield_addr = results[i];
+        if (scans[i].name == "luau_load") {
+            luau_load_addr = results[i];
+        }
+        if (scans[i].name == "lua_load") {
+            lua_load_idx = i;
+        }
     }
-    if (!getfield_addr || !setfield_addr) return;
-    uintptr_t gf_end = next_func_addr_vm(getfield_addr);
-    uintptr_t luaS_newlstr_addr = 0;
-    for (uintptr_t pc = getfield_addr; pc < gf_end; pc += 4) {
-        uint32_t insn = *(uint32_t*)(mem::data + pc);
-        if (is_bl(insn)) {
-            uintptr_t target = decode_bl(insn, pc);
-            size_t target_end = next_func_addr_vm(target);
-            size_t target_size = target_end - target;
-            if (target_size > 0x80 && target_size < 0x400) {
-                luaS_newlstr_addr = target;
+
+    if (!luau_load_addr || lua_load_idx == -1) return;
+    uintptr_t xref_addr = 0;
+    size_t begin = (mem::text_start + 3) & ~3ULL;
+    size_t end = mem::text_end - 4;
+    for (size_t i = begin; i < end; i += 4) {
+        uint32_t insn = *(uint32_t*)(mem::data + i);
+        if (is_adr(insn)) {
+            if (decode_adr(insn, i) == luau_load_addr) {
+                xref_addr = i;
+                break;
+            }
+        }
+        if (is_adrp(insn) && i + 4 < end) {
+            uint32_t insn2 = *(uint32_t*)(mem::data + i + 4);
+            if (decode_adrp_add(insn, insn2, i) == luau_load_addr) {
+                xref_addr = i;
                 break;
             }
         }
     }
-    uintptr_t pushlstring_addr = 0;
-    size_t begin = (mem::text_start + 3) & ~3ULL;
-    size_t end = mem::text_end - 4;
-    if (luaS_newlstr_addr) {
-        for (size_t i = begin; i < end; i += 4) {
-            uint32_t insn = *(uint32_t*)(mem::data + i);
-            if (is_bl(insn) && decode_bl(insn, i) == luaS_newlstr_addr) {
-                uintptr_t parent = mem::find_func(i);
-                if (!parent || parent == getfield_addr || parent == setfield_addr) continue;
-                size_t p_end = next_func_addr_vm(parent);
-                bool has_stack_offset = false;
-                for (size_t pc = parent; pc < p_end; pc += 4) {
-                    uint32_t inner_insn = *(uint32_t*)(mem::data + pc);
-                    if ((inner_insn & 0xFFC00000) == 0xF9400000) {
-                        uint32_t imm = ((inner_insn >> 10) & 0xFFF) << 3;
-                        if (imm == 0x38) {
-                            has_stack_offset = true;
-                            break;
-                        }
-                    }
-                }
+    if (xref_addr) {
+        uintptr_t lua_load_func = mem::find_func(xref_addr);
+        if (lua_load_func) {
+            results[lua_load_idx] = lua_load_func;
+        }
+    }
+}
 
-                if (has_stack_offset) {
-                    pushlstring_addr = parent;
+void resolve_luau_push_helpers(const std::vector<scan>& scans, std::vector<uintptr_t>& results) {
+    if (!mem::is_arm64) return;
+    uintptr_t getfield_addr = 0;
+    uintptr_t setfield_addr = 0;
+    size_t newlstr_idx = -1;
+    size_t pushlstring_idx = -1;
+    for (size_t i = 0; i < scans.size(); ++i) {
+        if (scans[i].name == "luagetfield") getfield_addr = results[i];
+        if (scans[i].name == "luasetfield") setfield_addr = results[i];
+        if (scans[i].name == "luas_newlstr") newlstr_idx = i;
+        if (scans[i].name == "lua_pushlstring") pushlstring_idx = i;
+    }
+
+    if (!getfield_addr || !setfield_addr || newlstr_idx == -1 || pushlstring_idx == -1) return;
+
+    uintptr_t gf_end = next_func_addr_vm(getfield_addr);
+    uintptr_t luaS_newlstr_addr = 0;
+    int bl_counter = 0;
+    for (uintptr_t pc = getfield_addr; pc < gf_end; pc += 4) {
+        uint32_t insn = *(uint32_t*)(mem::data + pc);
+        if (is_bl(insn)) {
+            bl_counter++;
+            uintptr_t target = decode_bl(insn, pc);
+            if (bl_counter > 1) {
+                uintptr_t target_end = next_func_addr_vm(target);
+                size_t target_size = target_end - target;
+                if (target_size > 0x80 && target_size < 0x400) {
+                    luaS_newlstr_addr = target;
+                    results[newlstr_idx] = luaS_newlstr_addr;
                     break;
                 }
             }
         }
     }
-    for (size_t i = 0; i < scans.size(); ++i) {
-        if (scans[i].name == "luas_newlstr") results[i] = luaS_newlstr_addr;
-        else if (scans[i].name == "lua_pushlstring") results[i] = pushlstring_addr;
+
+    if (!luaS_newlstr_addr) return;
+    uintptr_t pushlstring_addr = 0;
+    size_t begin = (mem::text_start + 3) & ~3ULL;
+    size_t end = mem::text_end - 4;
+
+    for (size_t i = begin; i < end; i += 4) {
+        uint32_t insn = *(uint32_t*)(mem::data + i);
+        if (is_bl(insn) && decode_bl(insn, i) == luaS_newlstr_addr) {
+            uintptr_t parent = mem::find_func(i);
+            if (!parent || parent == getfield_addr || parent == setfield_addr) continue;
+
+            size_t p_end = next_func_addr_vm(parent);
+            bool has_stack_offset = false;
+            int parent_bl_count = 0;
+
+            for (size_t pc = parent; pc < p_end; pc += 4) {
+                uint32_t inner_insn = *(uint32_t*)(mem::data + pc);
+                if (is_bl(inner_insn)) parent_bl_count++;
+                
+                if ((inner_insn & 0xFFC00000) == 0xF9400000) { 
+                    uint32_t imm = ((inner_insn >> 10) & 0xFFF) << 3;
+                    if (imm == 0x38) {
+                        has_stack_offset = true;
+                    }
+                }
+            }
+            if (has_stack_offset && parent_bl_count <= 3) {
+                pushlstring_addr = parent;
+                results[pushlstring_idx] = pushlstring_addr;
+                break; 
+            }
+        }
     }
 }
 
@@ -1255,4 +1317,5 @@ void resolve_vm_offsets(const std::vector<scan>& scans, std::vector<uintptr_t>& 
     resolve_luau_push_helpers(scans, results);
     resolve_miscstuff(scans, results);
     resolve_luauyeildoffsets(scans, results);
+    resolve_lua_load(scans, results);
 }
