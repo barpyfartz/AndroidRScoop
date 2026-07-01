@@ -26,5 +26,6 @@ void resolve_network_telemetry(const std::vector<scan>& scans, std::vector<uintp
 void resolve_lua_index2addr(const std::vector<scan>& scans, std::vector<uintptr_t>& results);
 void resolve_luau_push_helpers(const std::vector<scan>& scans, std::vector<uintptr_t>& results);
 void resolve_miscstuff(const std::vector<scan>& scans, std::vector<uintptr_t>& results);
+void resolve_luauyeildoffsets(const std::vector<scan>& scans, std::vector<uintptr_t>& results);
 void print_scan(const scan& s, uintptr_t result, std::string& last_section);
 void dump_all_fflags(const std::string& output_path);
