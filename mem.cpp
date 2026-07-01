@@ -47,6 +47,7 @@ struct Elf64_Shdr {
     uint64_t sh_entsize;
 };
 #pragma pack(pop)
+
 #define ELFMAG "\177ELF"
 #define SELFMAG 4
 #define EM_AARCH64 183
@@ -199,6 +200,25 @@ namespace mem {
         return 0;
     }
 
+    std::vector<uintptr_t> find_bl_xrefs(uintptr_t target) {
+        std::vector<uintptr_t> results;
+        if (!is_arm64 || !text_start || !text_end) return results;
+        size_t begin = (text_start + 3) & ~3ULL;
+        size_t end = text_end - 4;
+        for (size_t i = begin; i < end; i += 4) {
+            uint32_t insn = *(uint32_t*)(data + i);
+            if ((insn & 0xFC000000) != 0x94000000) continue;
+            int64_t imm = (insn & 0x3FFFFFF);
+            if (imm & 0x2000000) imm -= 0x4000000;
+            uintptr_t dest = i + (imm << 2);
+            if (dest == target) {
+                results.push_back(i);
+                if (results.size() >= 32) break;
+            }
+        }
+        return results;
+    }
+
     std::vector<uintptr_t> find_xrefs(uintptr_t target) {
         std::vector<uintptr_t> results;
         if (!text_start || !text_end) return results;
@@ -284,8 +304,23 @@ namespace mem {
             for (int i = (int)start_i; i >= lo; i -= 4) {
                 uint32_t insn = *(uint32_t*)(d + i);
 
-                if (is_func_prologue(insn))
+                if (is_func_prologue(insn)) {
+                    if ((insn & 0xFF8003FF) == 0xD10003FF) {
+                        for (int j = 1; j <= 12; ++j) {
+                            int prev_idx = i - j * 4;
+                            if (prev_idx < lo) break;
+                            uint32_t prev_insn = *(uint32_t*)(d + prev_idx);
+                            bool is_ret_prev = (prev_insn & 0xFFFFFC00) == 0xD65F0000;
+                            bool is_b_prev   = (prev_insn & 0xFC000000) == 0x14000000;
+                            if (is_ret_prev || is_b_prev) break;
+                            if ((prev_insn & 0xFFC00000) == 0xA9800000 || prev_insn == 0xD503233F || prev_insn == 0xD50323BF) {
+                                i = prev_idx;
+                                break;
+                            }
+                        }
+                    }
                     return i;
+                }
 
                 bool is_ret = (insn & 0xFFFFFC00) == 0xD65F0000;
                 bool is_br  = (insn & 0xFFFFFC00) == 0xD61F0000;
