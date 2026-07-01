@@ -8,7 +8,7 @@ namespace Offsets {
     constexpr uintptr_t Scriptstart = 0x394A818;
     constexpr uintptr_t Firetouchinterest = 0x45A668C;
     constexpr uintptr_t Jobstart = 0x1FDB078;
-    constexpr uintptr_t Jobstop = 0x1FDB658;
+    constexpr uintptr_t Jobstop = 0x1FDB2B8;
     constexpr uintptr_t RobloxSpawn = 0x1C69A24;
     constexpr uintptr_t Taskdesynchronize = 0x3940D00;
     constexpr uintptr_t TaskSynchronize = 0x3940AF4;
@@ -24,8 +24,8 @@ namespace Offsets {
     constexpr uintptr_t Lockviolationscriptcrash = 0x1C84C58;
     constexpr uintptr_t Luastepinternaloverride = 0x1C8724C;
     constexpr uintptr_t Hashtablelookup = 0x3860C08;
-    constexpr uintptr_t GetGlobalStateForInstance = 0x21B9EA0;
-    constexpr uintptr_t Getluastate = 0x21B9EA0;
+    constexpr uintptr_t GetGlobalStateForInstance = 0x29B2110;
+    constexpr uintptr_t Getluastate = 0x21B9EE0;
     constexpr uintptr_t KTable = 0x21BE7D8;
     constexpr uintptr_t Scriptcontextresume = 0x21BD52C;
     constexpr uintptr_t Stdstringconstructor = 0x1C57BF8;
@@ -72,4 +72,7 @@ namespace Offsets {
     constexpr uintptr_t lua_State_global_State = 0x60;
     constexpr uintptr_t luaS_newlstr = 0x5ABB89C;
     constexpr uintptr_t lua_pushlstring = 0x21A7FD8;
+    constexpr uintptr_t LuaDCall = 0x21BC798;
+    constexpr uintptr_t LuaDResume = 0x21BE220;
+    constexpr uintptr_t CoroutineYield = 0x21EFB88;
 }
