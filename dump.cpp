@@ -16,8 +16,8 @@ std::vector<scan> scans = {
     {"firetouchinterest", "new overlap in different world", "", 0, 0, false},
     {"jobstart", "[FLog::TaskSchedulerRun] JobStart %s", "", 0, 0, false},
     {"jobstop", "[FLog::TaskSchedulerRun] JobStop %s", "", 0, 0, false},
-    {"rbxspawn", "", "fd 7b bd a9 f6 57 01 a9 f4 4f 02 a9 fd 03 00 91 ?? ?? ?? ?? ?? ?? 3a 91 f3 03 00 aa 08 fd df 08 ?? ?? ?? ?? ?? ?? 39 91 48 06 00 36", 0, 0, false},
-    {"rbxspawnconstructor", "", "fd 7b bd a9 f6 57 01 a9 f4 4f 02 a9 fd 03 00 91 ?? ?? ?? ?? ?? ?? ?? ?? f3 03 00 aa 08 fd df 08 ?? ?? ?? ?? ?? ?? ?? ?? 48 06 00 36", 0, 0, false},
+    {"rbxspawn", "", "fd 7b bd a9 f6 57 01 a9 f4 4f 02 a9 fd 03 00 91 48 58 02 d0", 0, 0, false},
+    {"rbxspawnconstructor", "", "ff 03 02 d1 fd 7b 02 a9 fb 1b 00 f9 fa 67 04 a9 f8 5f 05 a9 f6 57 06 a9 f4 4f 07 a9 fd 83 00 91 ?? ?? ?? ?? ba 83 41 39", 0, 0, false},
     {"taskdesynchronize", "task.desynchronize() should only be called from a script that is a descendant of an Actor", "", 0, 0, false},
     {"task_synchronize", "", "", 0, 0, false}, // thx pereoxide
     {"task_defer", "", "", 0, 0, false},
@@ -41,9 +41,10 @@ std::vector<scan> scans = {
     {"stdstringconstructor", "", "fd 7b bd a9 f6 57 01 a9 f4 4f 02 a9 fd 03 00 91 f3 03 00 aa 00 00 40 f9 f5 03 01 aa 74 0a 40 f9 60 02 00 b4 00 00 80 f9 40 03 00 37", 0, 0, false},
     {"luauloadcorescripts", "", "fd 7b ba a9 fc 6f 01 a9 fa 67 02 a9 f8 5f 03 a9 f6 57 04 a9 f4 4f 05 a9 fd 03 00 91 ff 83 06 d1", 0, 0, false},
     {"validateandsetupcaps", "", "ff 83 02 d1 fd 7b 06 a9 f8 5f 07 a9 f6 57 08 a9 f4 4f 09 a9", 0, 0, false},
-    {"luaG_runerror",           "attempt to index %s with '%s'",                    "", 0, 0, false},
-    {"luaresume",              "cannot resume dead coroutine",                      "", 0, 0, false},
-    {"luaresumefromsuspended", "cannot resume non-suspended coroutine",             "", 0, 0, false},
+    {"luaG_typeerror",           "attempt to index %s with '%s'",                    "", 0, 0, false},
+    {"luaresume",              "", "FD 7B BF A9 FD 03 00 91 08 0C 40 39 1F 19 00 71 ?? ?? ?? 54 1F 05 00 71 ?? ?? ?? 54 ?? ?? ?? 35 08 24 40 F9 09 18 40 F9 1F 01 09 EB ?? ?? ?? 54", 0, 0, false},
+    {"luaresumefromsuspended", "", "FD 7B BE A9 F4 4F 01 A9 FD 03 00 91 08 0C 40 39 F3 03 00 AA F4 03 01 AA ?? ?? ?? 35 68 22 40 F9 1F 01 14 EB ?? ?? ?? 54", 0, 0, false},
+    {"lua_resumewrapper", "", "fd 7b bd a9 f5 0b 00 f9 f4 4f 02 a9 fd 03 00 91 f4 03 02 2a f3 03 00 aa ?? ?? ?? ?? ?? ?? ?? 34", 0, 0, false},
     {"luaHsettable",           "table index is nil",                                "", 0, 0, false},
     {"stackoverflow",           "stack overflow (%s)",                               "", 0, 0, false},
     {"invalidkeynext",          "invalid key to 'next'",                             "", 0, 0, false},
@@ -55,37 +56,53 @@ std::vector<scan> scans = {
     {"invokeclient",            "InvokeClient can only be called from the server",   "", 0, 0, false},
     {"luau_load",               "%s: bytecode version mismatch (expected [%d..%d], got %d)", "", 0, 0, false}, // for stupid niggers - luau_load is roblox made wrapper, lua_load is low-level
     {"lua_load", "", "", 0, 0, false},
-    {"luauyield",              "attempt to yield across metamethod/C-call boundary", "", 0, 0, false},
+    {"luauyield", "", "09 40 40 79 0a 44 40 79 e8 03 00 aa 3f 01 0a 6b ?? ?? ?? 54 ?? ?? ?? ?? 2a 00 80 52 00 00 80 12", 0, 0, false},
     {"resumewaitingscripts",    "WaitingHybridScriptsJob",                            "", 1, 0, false},
     {"getscheduler",            "", "ff c3 01 d1 fd 7b 04 a9 f5 2b 00 f9 f4 4f 06 a9 fd 03 01 91 ?? ?? ?? ?? ?? ?? ?? ?? a8 02 40 f9 a8 83 1f f8 ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? f3 03 00 aa 08 fd df 08 ?? ?? ?? ?? e0 03 13 aa", 0, 0, false},
     {"newproxy",                "", "fd 7b be a9 f3 0b 00 f9 fd 03 00 91 21 00 80 52 f3 03 00 aa ?? ?? ?? ?? 08 78 1f 12 1f 19 00 71", 0, 0, false},
     {"loadstring",           "loadstring() is not available",                               "", 0, 0, false},
     {"getfenv", "", "fd 7b be a9 f3 0b 00 f9 fd 03 00 91 f3 03 00 aa ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? 01 00 90 52 ?? ?? ?? ?? e0 03 13 aa 21 00 80 52", 0, 0, false},
+    {"getfenv_thread", "", "FF C3 05 D1 FD 7B ?? A9 FC 57 ?? A9 F4 4F ?? A9 FD 03 05 91 ?? ?? ?? D0 F4 03 01 2A 21 00 80 52 ?? ?? ?? F9 F3 03 00 AA ?? ?? ?? F9 ?? ?? ?? F8 ?? ?? ?? 97 1F 20 00 71 81 01 00 54", 0, 0, false},
     {"setfenv", "", "fd 7b be a9 f3 0b 00 f9 fd 03 00 91 f3 03 00 aa ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? 01 00 90 52 ?? ?? ?? ?? e0 03 13 aa 41 00 80 52", 0, 0, false},
     {"luaG_aritherror", "", "fd 7b bd a9 f6 57 01 a9 f4 4f 02 a9 fd 03 00 91 f5 03 03 2a f6 03 02 aa f3 03 00 aa ?? ?? ?? ?? f4 03 00 aa e0 03 13 aa e1 03 16 aa", 0, 0, false},
     {"luagetfield", "", "fd 7b bc a9 f7 0b 00 f9 f6 57 02 a9 f4 4f 03 a9 fd 03 00 91 f4 03 02 aa 3f 04 00 71 f3 03 00 aa 2b 01 00 54 69 a2 43 a9 08 51 21 8b 08 41 00 d1", 0, 0, false},
     {"luasetfield", "", "fd 7b bc a9 f7 0b 00 f9 f6 57 02 a9 f4 4f 03 a9 fd 03 00 91 f4 03 03 2a f5 03 02 aa 3f 04 00 71 f3 03 00 aa 2b 01 00 54 69 a2 43 a9 08 51 21 8b 08 41 00 d1", 0, 0, false},
     {"luau_execute", "", "", 0, 0, false},
-    {"luaD_throw", "", "", 0, 0, false},
+   // {"luaD_throw", "", "FD 7B BE A9 F4 4F 01 A9 FD 03 00 91 A8 65 00 F0 F4 03 01 AA F3 03 00 AA 08 21 5C 39", 0, 0, false}, roblox uses rbx_raiseluaexception, luad_throw aint even exist here :sob: this signature is a miss
     {"luaC_step", "", "", 0, 0, false},
     {"luaE_newthread", "", "", 0, 0, false},
-    {"lua_newthread", "", "", 0, 0, false},
+    {"lua_newthread", "", "fd 7b be a9 f4 4f 01 a9 fd 03 00 91 08 30 40 f9 f3 03 00 aa 08 25 43 a9 3f 01 08 eb ?? ?? ?? 54 e0 03 13 aa 21 00 80 52 ?? ?? ?? ?? 68 0a 40 39", 0, 0, false},
     {"getcapabilities", "", "", 0, 0, false},
     {"taskscheduler_mutex", "", "", 0, 0, true},
     {"taskscheduler_queue", "", "", 0, 0, true},
     {"taskscheduler_workers", "", "", 0, 0, true},
     {"telemetry_buffer", "", "", 0, 0, true},
     {"telemetry_size", "", "", 0, 0, true},
-    {"lua_index2addr", "", "fd 7b bd a9 f6 57 01 a9 f4 4f 02 a9 fd 03 00 91 f3 03 02 aa f4 03 01 2a 3f 04 00 71 f5 03 00 aa 2b 01 00 54 a9 a2 43 a9 08 51 34 8b 08 41 00 d1", 0, 0, false},
+    {"luaL_register", "", "?? ?? ?? ?? ?? ?? 75 39 ?? ?? ?? 34 fd 7b bc a9 f7 0b 00 f9 f6 57 02 a9 f4 4f 03 a9 fd 03 00 91 08 30 40 f9", 0, 0, false},
     {"lua_state_top", "", "", 0, 0, true},
     {"lua_state_base", "", "", 0, 0, true},
-    {"lua_state_global_state", "", "", 0, 0, true},
+    {"lua_state_globalstate", "", "", 0, 0, true},
+    {"lua_state_status",        "", "", 0, 0, true},
+   // {"lua_state_nccalls",       "", "", 0, 0, true},
+    {"lua_state_ci",            "", "", 0, 0, true},
+    {"lua_state_base_ci",       "", "", 0, 0, true}, // all commented structs are still working ass, gna fix em in next update
+   // {"lua_state_sizeof",        "", "", 0, 0, true},
+   // {"tvalue_tt",               "", "", 0, 0, true},
+   // {"global_state_l_gt",       "", "", 0, 0, true},
+   // {"global_state_registry",   "", "", 0, 0, true},
+   // {"global_state_strhash",    "", "", 0, 0, true},
+   // {"callinfo_sizeof",         "", "", 0, 0, true},
+   // {"tstring_hdr_sizeof",      "", "", 0, 0, true},
+   // {"table_sizeof",            "", "", 0, 0, true},
+   // {"lclosure_sizeof",         "", "", 0, 0, true},
+   // {"upval_sizeof",            "", "", 0, 0, true},
+    {"scriptcontext_facet_lvl", "", "", 0, 0, true},
     {"luas_newlstr", "", "", 0, 0, false},
     {"lua_pushlstring", "", "", 0, 0, false},
-    {"luaD_call", "", "fd 7b bc a9 f7 0b 00 f9 f6 57 02 a9 f4 4f 03 a9 fd 03 00 91 28 0c 40 b9 f4 03 02 2a f6 03 01 aa f3 03 00 aa 1f 21 00 71 80 00 00 54 e0 03 13 aa e1 03 16 aa", 0, 0, false},
+    {"luaD_call", "", "fd 7b bc a9 f7 0b 00 f9 f6 57 02 a9 f4 4f 03 a9 fd 03 00 91 28 0c 40 b9 f4 03 02 2a f6 03 01 aa f3 03 00 aa 1f 21 00 71 ?? ?? ?? 54 e0 03 13 aa e1 03 16 aa", 0, 0, false},
     {"luaD_resume", "", "", 0, 0, false},
     {"coroutine_yield", "", "", 0, 0, false},
-    {"luah_new", "", "FD 7B ?? A9 ?? ?? ?? F9 F4 4F 02 A9 FD 03 00 91 14 14 40 F9 F3 03 01 AA 14 01 00 B4", 0, 0, false},
+    {"luaH_new", "", "FD 7B ?? A9 ?? ?? ?? F9 F4 4F 02 A9 FD 03 00 91 14 14 40 F9 F3 03 01 AA 14 01 00 B4", 0, 0, false},
     {"luau_bytecodeload", "", "ff 03 02 d1 fd 7b 05 a9 f6 57 06 a9 f4 4f 07 a9 fd 43 01 91 ?? ?? ?? ?? 08 00 80 12 f4 03 00 aa", 0, 0, false},
     {"luau_validateheader", "", "ff c3 01 d1 fd 7b 03 a9 f8 5f 04 a9 f6 57 05 a9 f4 4f 06 a9 fd c3 00 91 ?? ?? ?? ?? ?? ?? ?? ?? e8 02 40 f9 a8 83 1f f8 28 08 40 f9 1f 61 04 f1 63 0a 00 54 f4 03 01 aa ?? ?? ?? ?? 01 0a 00 b4 29 00 40 39 c9 09 00 34 f3 03 02 aa e2 03 08 aa ?? ?? ?? ?? 60 02 00 b9", 0, 0, false},
     {"rbx_reportbytecode", "", "fd 7b ba a9 fc 6f 01 a9 fa 67 02 a9 f8 5f 03 a9 f6 57 04 a9 f4 4f 05 a9 fd 03 00 91 ff 83 13 d1 ?? ?? ?? ?? f3 03 04 2a f5 03 03 2a 7b 2f 46 f9 f4 03 02 aa f7 03 01 aa 68 03 40 f9 a8 83 1f f8 ?? ?? ?? ?? 08 21 01 91 19 61 40 a9 f9 e3 03 a9", 0, 0, false},
@@ -94,7 +111,38 @@ std::vector<scan> scans = {
     {"internalstringhash", "", "FD 7B BE A9 F3 0B 00 F9 FD 03 00 91 E0 03 01 AA F3 03 01 AA ?? ?? ?? ?? A0 01 00 B4 29 37 8F 52", 0, 0, false},
     {"taskscheduler_processjob", "", "FF 43 01 D1 FD 7B 01 A9 F8 5F 02 A9 F6 57 03 A9 F4 4F 04 A9 FD 43 00 91 ?? ?? ?? ?? ?? ?? ?? ?? C8 02 40 F9 E8 07 00 F9 28 00 40 F9 48 06 00 B4", 0, 0, false},
     {"fireserver_bridge", "", "ff 03 04 d1 fd 7b 0c a9 f8 5f 0d a9 f6 57 0e a9 f4 4f 0f a9 fd 03 03 91 ?? ?? ?? ?? f4 03 02 aa f5 03 01 aa", 0, 0, false},
-    
+    {"lua_xmove", "", "FD 7B BD A9 F6 57 01 A9 F4 4F 02 A9 FD 03 00 91 1F 00 01 EB ?? ?? ?? 54 28 08 40 39 F4 03 01 AA F3 03 00 AA F5 03 02 2A ?? ?? ?? 36 82 22 00 91 E0 03 14 AA E1 03 14 AA ?? ?? ?? ?? ?? ?? ?? 90 08 21 5C 39", 0, 0, false},
+    {"lua_checkstack", "", "FF 03 01 D1 FD 7B 01 A9 F5 13 00 F9 F4 4F 03 A9 FD 43 00 91 ?? ?? ?? ?? 08 E8 83 52 ?? ?? ?? ?? 3F 00 08 6B ?? ?? ?? ?? ?? ?? ?? ?? 4C 01 00 54 08 A4 43 A9 0A E8 83 52 F4 03 01 2A F3 03 00 AA 09 01 09 CB 29 FD 44 93 29 C1 21 8B 3F 01 0A EB", 0, 0, false},
+    {"lua_istable", "", "FD 7B BF A9 FD 03 00 91 3F 04 00 71 2B 01 00 54 09 A0 43 A9 08 51 21 8B 08 41 00 D1 1F 01 09 EB ?? ?? ?? ?? ?? ?? ?? ?? 00 31 89 9A 08 00 00 14 C8 E1 84 12 3F 00 08 6B ?? ?? ?? ?? 08 1C 40 F9 00 D1 21 8B 02 00 00 14 ?? ?? ?? ?? 08 0C 40 B9 1F 21 00 71 ?? ?? ?? ?? 08 00 40 F9 08 0D 40 39 1F 01 00 71 E0 07 9F 1A", 0, 0, false},
+    {"lua_isreadonly", "", "FD 7B BF A9 FD 03 00 91 3F 04 00 71 2B 01 00 54 09 A0 43 A9 08 51 21 8B 08 41 00 D1 1F 01 09 EB ?? ?? ?? ?? ?? ?? ?? ?? 00 31 89 9A 08 00 00 14 C8 E1 84 12 3F 00 08 6B ?? ?? ?? ?? 08 1C 40 F9 00 D1 21 8B 02 00 00 14 ?? ?? ?? ?? 08 0C 40 B9 1F 21 00 71 ?? ?? ?? ?? 08 00 40 F9 08 0D 40 39 1F 01 00 71 E0 17 9F 1A", 0, 0, false},
+    {"lua_type", "", "FD 7B BF A9 FD 03 00 91 3F 04 00 71 ?? ?? ?? 54 09 A0 43 A9 08 51 21 8B 00 41 00 D1 1F 00 09 EB", 0, 0, false},
+    {"lua_pushvalue", "", "FD 7B BE A9 F4 4F 01 A9 FD 03 00 91 08 08 40 39 F3 03 00 AA F4 03 01 2A A8 00 10 36 62 22 00 91", 0, 0, false},
+    {"luaL_optinteger", "", "FD 7B BD A9 F5 0B 00 F9 F4 4F 02 A9 FD 03 00 91 F4 03 02 2A F3 03 01 2A F5 03 00 AA ?? ?? ?? 97 1F 04 00 71", 0, 0, false},
+    {"lua_tointegerx", "", "FF 03 01 D1 FD 7B 02 A9 F4 4F 03 A9 FD 83 00 91 ?? ?? ?? F0 F3 03 02 AA 3F 04 00 71 ?? ?? ?? F9 88 02 40 F9 A8 83 1F F8", 0, 0, false},
+    {"luaL_checkinteger", "", "FF 03 01 D1 FD 7B 01 A9 F5 13 00 F9 F4 4F 03 A9 FD 43 00 91 ?? ?? ?? F0 E2 13 00 91 F3 03 01 2A ?? ?? ?? F9 F4 03 00 AA", 0, 0, false},
+    {"lua_getinfo", "", "FF C3 05 D1 FD 7B 14 A9 FC AB 00 F9 F4 4F 16 A9 FD 03 05 91 ?? ?? ?? F0 ?? ?? ?? D0 ?? ?? ?? 91 ?? ?? ?? F9", 0, 0, false},
+    {"luaC_link", "", "28 08 40 39 09 30 40 F9 08 79 1D 12 28 08 00 39 28 11 40 F9 48 00 00 F9 21 11 00 F9 C0 03 5F D6", 0, 0, false},
+    {"luaL_typerror", "", "FD 7B BE A9 F4 4F 01 A9 FD 03 00 91 F3 03 01 2A E1 03 02 2A F4 03 00 AA ?? ?? ?? 97 E2 03 00 AA E0 03 14 AA E1 03 13 2A ?? ?? ?? 97", 0, 0, false},
+    {"luaL_error", "", "FF C3 04 D1 FD 7B 10 A9 FC 57 11 A9 F4 4F 12 A9 FD 03 04 91 E2 0F 08 A9 ?? ?? ?? F0 E9 03 00 91 E4 17 09 A9", 0, 0, false},
+    {"luaL_argerror", "", "fd 7b bd a9 f6 57 01 a9 f4 4f 02 a9 fd 03 00 91 f3 03 02 aa f4 03 01 2a f5 03 00 aa ?? ?? ?? 97 f6 03 00 aa e0 03 15 aa e1 03 14 2a", 0, 0, false},
+    {"luaT_getobjname", "", "FD 7B BE A9 F3 0B 00 F9 FD 03 00 91 29 0C 40 B9 3F 09 00 71 ?? ?? ?? 54 3F 25 00 71", 0, 0, false},
+    {"luaO_pushvfstring", "", "FF 83 01 D1 FD 7B 03 A9 F6 57 04 A9 F4 4F 05 A9 FD C3 00 91 ?? ?? ?? B0 F4 03 02 AA F3 03 00 AA", 0, 0, false},
+    {"luaT_objtypename", "", "FD 7B BF A9 FD 03 00 91 ?? ?? ?? 97 00 60 00 91 FD 7B C1 A8 C0 03 5F D6", 0, 0, false}, // avitamin
+    {"rbx_raiseluaexception", "", "FD 7B BE A9 F4 4F 01 A9 FD 03 00 91 F4 03 00 AA 00 03 80 52 F3 03 01 2A ?? ?? ?? 97", 0, 0, false},
+    {"lua_typename", "", "3F 04 00 31 ?? ?? ?? 54 ?? ?? ?? B0 ?? ?? ?? 91 00 D9 61 F8 C0 03 5F D6", 0, 0, false},
+    {"lua_toboolean", "", "C8 E1 84 12 3F 00 08 6B ?? ?? ?? 54 08 1C 40 F9 00 D1 21 8B ?? ?? ?? 14 ?? ?? ?? 94 08 0C 40 B9 ?? ?? ?? 34 1F 05 00 71 ?? ?? ?? 54 08 00 40 B9 1F 01 00 71 E8 07 9F 1A", 0, 0, false},
+    {"lua_touserdata", "", "C8 E1 84 12 3F 00 08 6B ?? ?? ?? 54 08 1C 40 F9 00 D1 21 8B ?? ?? ?? 14 ?? ?? ?? 94 08 0C 40 B9 1F 09 00 71 ?? ?? ?? 54 1F 25 00 71 ?? ?? ?? 54 08 00 40 F9 00 41 00 91", 0, 0, false},
+ //   {"lua_pushstring", "", "8A 00 80 52 14 01 00 F9 69 1E 40 F9 0A 0D 00 B9 28 41 00 91 68 1E 00 F9 F4 4F 41 A9 FD 7B C2 A8 C0 03 5F D6", 0, 0, false}, they r good but dumper has ASS memory work so ts cant work normally
+ //   {"lua_pushvector3", "", "A9 00 80 52 0A 25 00 2D 08 09 00 BD 09 0D 00 B9 08 41 00 91 68 1E 00 F9 FD FB 41 A9 F3 17 40 F9 E9 A3 40 6D EA 07 43 FC C0 03 5F D6", 0, 0, false},
+    {"lua_gettable", "", "C8 E1 84 12 9F 02 08 6B ?? ?? ?? 54 68 1E 40 F9 01 D1 34 8B ?? ?? ?? 14 E0 03 13 AA E1 03 14 2A ?? ?? ?? 94 68 1E 40 F9 E1 03 00 AA 02 41 00 D1 E0 03 13 AA E3 03 02 AA ?? ?? ?? 97 68 1E 40 F9 00 C1 5F B8", 0, 0, false},
+    {"lua_resumefinalize",       "", "FD 7B BC A9 F8 5F 01 A9 F6 57 02 A9 F4 4F 03 A9 FD 03 00 91 F4 03 02 2A F5 03 01 2A F3 03 00 AA", 0, 0, false},
+    {"luaD_calldispatcher",  "", "FD 7B BD A9 F5 0B 00 F9 F4 4F 02 A9 FD 03 00 91 F4 03 00 AA E8 03 01 AA E1 03 02 AA 00 01 3F D6", 0, 0, false},
+    {"resume_error",          "", "FD 7B BE A9 F4 4F 01 A9 FD 03 00 91 28 08 00 51 F3 03 02 AA F4 03 00 AA 1F 09 00 71 43 01 00 54", 0, 0, false},
+    {"luaD_poscall",          "", "08 24 40 F9 0C 1C 40 F9 0B 29 40 B9 0A 0D 40 F9 09 C1 00 D1 7F 01 00 71 80 11 41 FA", 0, 0, false},
+    {"luaG_runerror",         "", "FD 7B BE A9 FC 4F 01 A9 FD 03 00 91 FF 03 0C D1 E2 0F 08 A9 89 45 00 F0 EA 03 02 91 E4 17 09 A9", 0, 0, false},
+    {"lua_index2addr", "", "fd 7b be a9 f4 4f 01 a9 fd 03 00 91 08 08 40 39 f3 03 00 aa f4 03 01 2a a8 00 10 36 62 22 00 91 e0 03 13 aa e1 03 13 aa ?? ?? ?? ?? 9f 06 00 71 ?? ?? ?? 54 69 a2 43 a9", 0, 0, false},
+    {"luaH_getstr", "", "29 0c 40 39 4a 10 40 b9 08 21 c9 1a 29 0c 40 f9 48 01 28 0a 28 15 08 8b 09 1d 40 b9", 0, 0, false},
+    {"instance_getproperty", "Unable to query property {}. It is not scriptable", "", 0, 0, false},
 };
 
 static inline bool is_bl(uint32_t insn) {
@@ -755,7 +803,7 @@ void resolve_network_telemetry(const std::vector<scan>& scans, std::vector<uintp
     }
 }
 
-void resolve_lua_index2addr(const std::vector<scan>& scans, std::vector<uintptr_t>& results) {
+void resolve_lua_index2addr(const std::vector<scan>& scans, std::vector<uintptr_t>& results) { // lowkass
     if (!mem::is_arm64) return;
 
     uintptr_t index2addr_addr = 0;
@@ -860,6 +908,7 @@ void resolve_lua_load(const std::vector<scan>& scans, std::vector<uintptr_t>& re
 
 void resolve_luau_push_helpers(const std::vector<scan>& scans, std::vector<uintptr_t>& results) {
     if (!mem::is_arm64) return;
+
     uintptr_t getfield_addr = 0;
     uintptr_t setfield_addr = 0;
     size_t newlstr_idx = -1;
@@ -894,6 +943,7 @@ void resolve_luau_push_helpers(const std::vector<scan>& scans, std::vector<uintp
     }
 
     if (!luaS_newlstr_addr) return;
+
     uintptr_t pushlstring_addr = 0;
     size_t begin = (mem::text_start + 3) & ~3ULL;
     size_t end = mem::text_end - 4;
@@ -1088,32 +1138,168 @@ void resolve_luauyeildoffsets(const std::vector<scan>& scans, std::vector<uintpt
     }
 }
 
+void resolve_struct_offsets(const std::vector<scan>& scans, std::vector<uintptr_t>& results) {
+    if (!mem::is_arm64) return;
+    auto set_result = [&](const std::string& name, uintptr_t val) {
+        for (size_t i = 0; i < scans.size(); ++i)
+            if (scans[i].name == name) { results[i] = val; return; }
+    };
+
+    uintptr_t index2addr_addr = 0;
+    uintptr_t getstr_addr = 0;
+    uintptr_t newthread_addr = 0;
+    uintptr_t newthread_internal = 0;
+    
+    for (size_t i = 0; i < scans.size(); ++i) {
+        if (scans[i].name == "lua_index2addr") index2addr_addr = results[i];
+        if (scans[i].name == "luaH_getstr") getstr_addr = results[i];
+        if (scans[i].name == "lua_newthread") newthread_addr = results[i];
+        if (scans[i].name == "luaE_newthread") newthread_internal = results[i];
+    }
+
+    if (!newthread_internal && newthread_addr) {
+        for (size_t i = 0; i < 0x100; i += 4) {
+            uint32_t insn = *(uint32_t*)(mem::data + newthread_addr + i);
+            uint32_t next_insn = *(uint32_t*)(mem::data + newthread_addr + i + 4);
+            if (is_bl(insn) && next_insn == 0xf9401e69) {
+                newthread_internal = decode_bl(insn, newthread_addr + i);
+                break;
+            }
+        }
+    }
+
+    if (newthread_internal) {
+        uint32_t insn_size = *(uint32_t*)(mem::data + newthread_internal + 0x10);
+        if ((insn_size & 0xFFFF0000) == 0x52800000) {
+            set_result("lua_state_sizeof", (insn_size >> 5) & 0xFFFF);
+        }
+
+        uintptr_t f_end = next_func_addr_vm(newthread_internal);
+        for (uintptr_t pc = newthread_internal; pc < f_end; pc += 4) {
+            uint32_t insn = *(uint32_t*)(mem::data + pc);
+            if ((insn & 0xFFC00000) == 0xA9000000) {
+                uint32_t offset = ((insn >> 15) & 0x7F) << 3;
+                if (offset >= 0x20 && offset <= 0x60) {
+                    set_result("lua_state_globalstate", offset + 8);
+                    set_result("lua_state_global_state", offset + 8);
+                }
+            }
+            if ((insn & 0xFFC00000) == 0xF9000000) {
+                uint32_t offset = ((insn >> 10) & 0xFFF) << 3;
+                if (offset == 0x30) set_result("lua_state_base_ci", 0x30);
+                if (offset == 0x48) set_result("lua_state_ci", 0x48);
+            }
+            if ((insn & 0xFFC00000) == 0x39400000) {
+                uint32_t offset = (insn >> 10) & 0xFFF;
+                if (offset < 0x10) set_result("lua_state_status", 0x03);
+            }
+            if ((insn & 0xFFC00000) == 0x79000000) {
+                uint32_t offset = ((insn >> 10) & 0xFFF) << 1;
+                if (offset >= 0x18 && offset <= 0x30) set_result("lua_state_nccalls", offset);
+            }
+        }
+    }
+
+    if (index2addr_addr) {
+        uintptr_t f_end = next_func_addr_vm(index2addr_addr);
+        for (uintptr_t pc = index2addr_addr; pc < f_end; pc += 4) {
+            uint32_t insn = *(uint32_t*)(mem::data + pc);
+            if ((insn & 0xFFC00000) == 0xA9400000) {
+                uint32_t offset = ((insn >> 15) & 0x7F) << 3;
+                if (offset == 0x38 || offset == 0x30 || offset == 0x40) {
+                    set_result("lua_state_top", offset);
+                    set_result("lua_state_base", offset + 8);
+                    break;
+                }
+            }
+        }
+    }
+
+    if (getstr_addr) {
+        uint32_t insn = *(uint32_t*)(mem::data + getstr_addr + 0x18);
+        if ((insn & 0xFFC00000) == 0xF9400000) {
+            uint32_t strhash_offset = ((insn >> 10) & 0xFFF) << 3;
+            set_result("global_state_strhash", strhash_offset);
+        }
+    }
+
+    uintptr_t reg_str = mem::find_str("Unable to query property {}. It is not scriptable");
+    if (reg_str) {
+        auto xrefs = mem::find_xrefs(reg_str);
+        if (!xrefs.empty()) {
+            uintptr_t func = mem::find_func(xrefs[0]);
+            if (func) {
+                uintptr_t f_end = next_func_addr_vm(func);
+                std::vector<uint32_t> candidates;
+                for (uintptr_t pc = func; pc < f_end; pc += 4) {
+                    uint32_t insn = *(uint32_t*)(mem::data + pc);
+                    if ((insn & 0xFF000000) == 0x91000000) {
+                        uint32_t imm = (insn >> 10) & 0xFFF;
+                        if (imm >= 0x400 && imm <= 0x600) candidates.push_back(imm);
+                    }
+                }
+                std::sort(candidates.begin(), candidates.end());
+                candidates.erase(std::unique(candidates.begin(), candidates.end()), candidates.end());
+                if (candidates.size() >= 2) {
+                    set_result("global_state_l_gt", candidates[0]);
+                    set_result("global_state_registry", candidates[1]);
+                }
+            }
+        }
+    }
+
+    uintptr_t str_addr = mem::find_str("Invalid Facet Access");
+    if (str_addr) {
+        auto xrefs = mem::find_xrefs(str_addr);
+        for (uintptr_t xref : xrefs) {
+            uintptr_t func = mem::find_func(xref);
+            if (!func) continue;
+            uintptr_t f_end = next_func_addr_vm(func);
+            for (uintptr_t pc = func; pc < std::min(f_end, func + 0x80); pc += 4) {
+                uint32_t ins  = *(uint32_t*)(mem::data + pc);
+                uint32_t ins2 = *(uint32_t*)(mem::data + pc + 4);
+                if ((ins & 0xFF0003FF) == 0x91000008) {
+                    uint32_t imm = (ins >> 10) & 0xFFF;
+                    if (imm > 0x100 && (ins2 & 0xFFFFFC00) == 0x88DFFC00) {
+                        set_result("scriptcontext_facet_lvl", imm);
+                        break;
+                    }
+                }
+            }
+        }
+    }
+}
+
 void resolve_vm_offsets(const std::vector<scan>& scans, std::vector<uintptr_t>& results) {
     if (!mem::is_arm64) return;
-
     uintptr_t lua_resume = 0;
     uintptr_t luaG_runerror = 0;
+    uintptr_t lua_newthread = 0;
     for (size_t i = 0; i < scans.size(); ++i) {
         if (scans[i].name == "luaresume") lua_resume = results[i];
         else if (scans[i].name == "luaG_runerror") luaG_runerror = results[i];
+        else if (scans[i].name == "lua_newthread") lua_newthread = results[i]; 
     }
 
     uintptr_t luau_execute = 0;
     uintptr_t luaD_throw = 0;
     uintptr_t luaC_step = 0;
-    {
-        const uint8_t sig[] = { 0xe9, 0x23, 0xba, 0x6d, 0xfd, 0x7b, 0x01, 0xa9, 0xf9, 0x13, 0x00, 0xf9 };
-        for (size_t pc = mem::text_start; pc <= mem::text_end - 0x30; pc += 4) {
-            if (memcmp(mem::data + pc, sig, sizeof(sig)) == 0) {
-                uint32_t insn = *(uint32_t*)(mem::data + pc + 0x24);
-                uint32_t op = insn & 0xFFC00000;
-                uint32_t imm12 = (insn >> 10) & 0xFFF;
-                if (op == 0x71000000 && imm12 == 201) {
-                    luau_execute = pc;
-                    break;
-                }
+    size_t max_func_size = 0;
+    uintptr_t best_candidate = 0;
+    for (size_t pc = mem::text_start; pc < mem::text_end; pc += 4) {
+        uint32_t insn = *(uint32_t*)(mem::data + pc);
+        if (is_func_prologue_vm(insn)) {
+            uintptr_t next_f = next_func_addr_vm(pc);
+            size_t curr_size = next_f - pc;
+            if (curr_size > max_func_size) {
+                max_func_size = curr_size;
+                best_candidate = pc;
             }
         }
+    }
+
+    if (max_func_size > 0x3000) {
+        luau_execute = best_candidate;
     }
     if (luaG_runerror) {
         uintptr_t body_candidate = 0;
@@ -1196,7 +1382,6 @@ void resolve_vm_offsets(const std::vector<scan>& scans, std::vector<uintptr_t>& 
         if (curr_func != 0 && has_gc_offsets) {
             gc_funcs.push_back({curr_func, bl_calls});
         }
-
         std::vector<uintptr_t> unique_targets;
         for (const auto& gf : gc_funcs) {
             for (uintptr_t target : gf.calls) {
@@ -1226,81 +1411,18 @@ void resolve_vm_offsets(const std::vector<scan>& scans, std::vector<uintptr_t>& 
             }
         }
     }
-
     uintptr_t luaE_newthread = 0;
-    {
-        size_t begin = (mem::text_start + 3) & ~3ULL;
-        size_t end = mem::text_end - 32;
-        for (size_t i = begin; i < end; i += 4) {
-            uint32_t ins1 = *(uint32_t*)(mem::data + i);
-            if (ins1 == 0x52800101) {
-                for (int j = 1; j < 5; ++j) {
-                    uint32_t ins2 = *(uint32_t*)(mem::data + i + j * 4);
-                    if ((ins2 & 0xFF80001F) == 0x52800002) {
-                        uint32_t imm = (ins2 >> 5) & 0xFFFF;
-                        if (imm >= 16 && imm <= 48 && (imm % 8) == 0) {
-                            for (int k = 1; k < 5; ++k) {
-                                uint32_t ins3 = *(uint32_t*)(mem::data + i + (j + k) * 4);
-                                if (is_bl(ins3)) {
-                                    luaE_newthread = mem::find_func(i);
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                    if (luaE_newthread) break;
-                }
-            }
-            if (luaE_newthread) break;
-        }
-    }
-
-    uintptr_t lua_newthread = 0;
-    if (luaE_newthread) {
-        std::vector<uintptr_t> callers;
-        size_t begin = (mem::text_start + 3) & ~3ULL;
-        size_t end = mem::text_end - 4;
-        for (size_t i = begin; i < end; i += 4) {
-            uint32_t ins = *(uint32_t*)(mem::data + i);
-            if (is_bl(ins)) {
-                uintptr_t target = decode_bl(ins, i);
-                if (target == luaE_newthread) {
-                    uintptr_t caller_func = mem::find_func(i);
-                    if (caller_func && std::find(callers.begin(), callers.end(), caller_func) == callers.end()) {
-                        callers.push_back(caller_func);
-                    }
-                }
-            }
-        }
-
-        uintptr_t getscheduler_addr = 0;
-        for (size_t i = 0; i < scans.size(); ++i) {
-            if (scans[i].name == "getscheduler") {
-                getscheduler_addr = results[i];
-                break;
-            }
-        }
-
-        for (uintptr_t caller : callers) {
-            bool calls_scheduler = false;
-            size_t next_func = next_func_addr_vm(caller);
-            for (size_t pc = caller; pc < next_func; pc += 4) {
-                uint32_t ins = *(uint32_t*)(mem::data + pc);
-                if (is_bl(ins)) {
-                    uintptr_t target = decode_bl(ins, pc);
-                    if (getscheduler_addr && target == getscheduler_addr) {
-                        calls_scheduler = true;
-                        break;
-                    }
-                }
-            }
-            if (!calls_scheduler) {
-                lua_newthread = caller;
+    if (lua_newthread) {
+        for (size_t i = 0; i < 0x100; i += 4) {
+            uint32_t insn = *(uint32_t*)(mem::data + lua_newthread + i);
+            uint32_t next_insn = *(uint32_t*)(mem::data + lua_newthread + i + 4);
+            
+            if (is_bl(insn) && next_insn == 0xf9401e69) {
+                luaE_newthread = decode_bl(insn, lua_newthread + i);
                 break;
             }
         }
     }
-
     for (size_t i = 0; i < scans.size(); ++i) {
         if (scans[i].name == "luau_execute") results[i] = luau_execute;
         else if (scans[i].name == "luaD_throw") results[i] = luaD_throw;
@@ -1308,6 +1430,7 @@ void resolve_vm_offsets(const std::vector<scan>& scans, std::vector<uintptr_t>& 
         else if (scans[i].name == "luaE_newthread") results[i] = luaE_newthread;
         else if (scans[i].name == "lua_newthread") results[i] = lua_newthread;
     }
+
     resolve_getcapabilities(scans, results);
     resolve_tsconstrctor(scans, results);
     resolve_tsdecoffsets(scans, results);
@@ -1318,4 +1441,5 @@ void resolve_vm_offsets(const std::vector<scan>& scans, std::vector<uintptr_t>& 
     resolve_miscstuff(scans, results);
     resolve_luauyeildoffsets(scans, results);
     resolve_lua_load(scans, results);
+    resolve_struct_offsets(scans, results);
 }
