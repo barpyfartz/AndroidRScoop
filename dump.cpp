@@ -1564,4 +1564,4 @@ void resolve_vm_offsets(const std::vector<scan>& scans, std::vector<uintptr_t>& 
     resolve_fields(scans, results);
     resolvegetfenv(scans, results);
     resolve_luau_deserialize(scans, results);
-}
+} // six seeeveeen
