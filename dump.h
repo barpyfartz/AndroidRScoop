@@ -10,6 +10,7 @@ struct scan {
     int up = 0;
     int down = 0;
     bool offset = false;
+    ptrdiff_t byte_offset = 0;
 };
 
 extern std::vector<scan> scans;
